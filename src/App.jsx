@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import './App.css'
-import Logo from './assets/logo.png'
+import Logo from './assets/Logo.png'
 // import { WEATHER_API_KEY } from './secrets'; // Uncomment this line if you are using the secrets.js file and comment at the time of pushing to github
 
 function App() {
