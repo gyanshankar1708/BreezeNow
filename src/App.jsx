@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import './App.css'
 import Logo from './assets/Logo.png'
-// import { WEATHER_API_KEY } from './secrets'; // Uncomment this line if you are using the secrets.js file and comment at the time of pushing to github
+import { VITE_WEATHER_API_KEY } from './secrets'; // Uncomment this line if you are using the secrets.js file and comment at the time of pushing to github
 
 function App() {
   const [city, setCity] = useState("London");
@@ -22,8 +22,8 @@ function App() {
   const[region, setRegion]= useState(null);
 
   useEffect(() => {
-    // const apiKey = WEATHER_API_KEY; // Uncomment this line if you are using the secrets.js file and comment at the time of pushing to github
-    const apiKey = import.meta.env.WEATHER_API_KEY; // Comment this line if you are using the secrets.js file and uncomment at the time of pushing to github  
+    const apiKey = VITE_WEATHER_API_KEY; // Uncomment this line if you are using the secrets.js file and comment at the time of pushing to github
+    // const apiKey = import.meta.env.VITE_WEATHER_API_KEY; // Comment this line if you are using the secrets.js file and uncomment at the time of pushing to github  
     const url = `https://api.weatherapi.com/v1/current.json?key=${apiKey}&q=${city}&aqi=yes`;
     const fetchData = async () => {
       try {
