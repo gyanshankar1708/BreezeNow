@@ -8,7 +8,7 @@ function App() {
   const [weatherData, setWeatherData] = useState(null);
   const [forecastData, setForecastData] = useState(null);
   const [error, setError] = useState(null);
-  
+
   // New States
   const [isCelsius, setIsCelsius] = useState(true);
   const [suggestions, setSuggestions] = useState([]);
@@ -65,9 +65,9 @@ function App() {
   }, [cityInfo]);
 
   useEffect(() => {
-    const apiKey = import.meta.env.VITE_WEATHER_API_KEY;   
+    const apiKey = import.meta.env.VITE_WEATHER_API_KEY;
     const url = `https://api.weatherapi.com/v1/forecast.json?key=${apiKey}&q=${city}&days=3&aqi=yes`;
-    
+
     const fetchData = async () => {
       try {
         const response = await fetch(url);
@@ -80,7 +80,7 @@ function App() {
         const data = await response.json();
         setWeatherData(data);
         setForecastData(data.forecast?.forecastday || []);
-        
+
         const locationName = data.location.name;
         if (!city.includes(',')) {
           setRecentSearches(prev => {
@@ -88,22 +88,22 @@ function App() {
             return [locationName, ...filtered].slice(0, 5);
           });
         }
-        
+
         const isDay = data.current.is_day;
         const conditionText = data.current.condition.text.toLowerCase();
-        
+
         if (isDay === 0) {
-            setBackgroundClass("bg-gradient-to-br from-indigo-900 to-black");
+          setBackgroundClass("bg-gradient-to-br from-indigo-900 to-black");
         } else if (conditionText.includes("sunny") || conditionText.includes("clear")) {
-            setBackgroundClass("bg-gradient-to-br from-yellow-400 to-orange-500");
+          setBackgroundClass("bg-gradient-to-br from-yellow-400 to-orange-500");
         } else if (conditionText.includes("rain") || conditionText.includes("drizzle")) {
-            setBackgroundClass("bg-gradient-to-br from-gray-700 to-blue-900");
+          setBackgroundClass("bg-gradient-to-br from-gray-700 to-blue-900");
         } else if (conditionText.includes("cloud") || conditionText.includes("overcast")) {
-            setBackgroundClass("bg-gradient-to-br from-gray-400 to-gray-600");
+          setBackgroundClass("bg-gradient-to-br from-gray-400 to-gray-600");
         } else if (conditionText.includes("snow") || conditionText.includes("ice")) {
-            setBackgroundClass("bg-gradient-to-br from-blue-100 to-blue-300");
+          setBackgroundClass("bg-gradient-to-br from-blue-100 to-blue-300");
         } else {
-            setBackgroundClass("bg-gradient-to-br from-blue-900 to-blue-600");
+          setBackgroundClass("bg-gradient-to-br from-blue-900 to-blue-600");
         }
 
       } catch (err) {
@@ -111,9 +111,9 @@ function App() {
         setError("Error fetching data");
       }
     }
-    
+
     if (city) {
-        fetchData();
+      fetchData();
     }
 
   }, [city])
@@ -158,10 +158,10 @@ function App() {
   }
 
   const handleSearch = () => {
-    if(cityInfo.trim() !== "") {
-        setCity(cityInfo);
-        setCityInfo("");
-        setShowSuggestions(false);
+    if (cityInfo.trim() !== "") {
+      setCity(cityInfo);
+      setCityInfo("");
+      setShowSuggestions(false);
     }
   }
 
@@ -309,7 +309,7 @@ function App() {
             {location.region && <p className='text-white text-lg'>{location.region}, {location.country}</p>}
             <p className='text-sm text-gray-200 mt-2'>Lat: {location.lat} | Lon: {location.lon}</p>
           </div>
-          
+
           <div className="condition flex flex-col items-center gap-2 justify-center">
             {current.condition.icon && <img className='w-24 h-24 drop-shadow-lg' src={current.condition.icon} alt="weather icon" />}
             {current.condition.text && <p className='text-2xl font-semibold text-white drop-shadow-md'>{current.condition.text}</p>}
@@ -348,7 +348,7 @@ function App() {
               <span className="text-2xl font-bold text-white">{current.dewpoint_c}°C</span>
             </div>
           </div>
-          
+
           {insights.length > 0 && (
             <div className="advisory-section">
               <div className="advisory-topline">
@@ -391,7 +391,7 @@ function App() {
                 const minTemp = isCelsius ? day.day.mintemp_c : day.day.mintemp_f;
                 return (
                   <div key={day.date} className="p-6 rounded-xl bg-white/20 shadow-lg flex flex-col items-center flex-1">
-                    <span className="text-white font-semibold text-lg">{new Date(day.date).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric'})}</span>
+                    <span className="text-white font-semibold text-lg">{new Date(day.date).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}</span>
                     <img src={day.day.condition.icon} alt={day.day.condition.text} className="w-16 h-16 my-2 drop-shadow-md" />
                     <div className="flex gap-3 items-center">
                       <span className="text-xl font-bold text-white" title="High">{maxTemp}°</span>
@@ -416,24 +416,24 @@ function App() {
           Switch to {isCelsius ? "°F" : "°C"}
         </button>
       </nav>
-      
+
       <main className='flex flex-col items-center justify-start pt-10 min-h-[calc(100vh-80px)]'>
         <div className="input-container flex flex-col items-center gap-4 w-full max-w-md px-4 mb-8">
           <div className="flex gap-2 w-full relative">
-            <input 
-              type="text" 
-              placeholder='Enter City Name' 
-              value={cityInfo} 
-              onChange={handleChange} 
+            <input
+              type="text"
+              placeholder='Enter City Name'
+              value={cityInfo}
+              onChange={handleChange}
               onFocus={() => setShowSuggestions(true)}
               onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
-              className='flex-1 border-2 border-white/40 bg-black/20 focus:bg-black/40 focus:border-white p-3 rounded-xl text-white outline-none placeholder-gray-300 transition' 
+              className='flex-1 border-2 border-white/40 bg-black/20 focus:bg-black/40 focus:border-white p-3 rounded-xl text-white outline-none placeholder-gray-300 transition'
               onKeyDown={(e) => {
                 if (e.key === 'Enter') handleSearch();
-              }} 
+              }}
             />
-            <button 
-              onClick={handleSearch} 
+            <button
+              onClick={handleSearch}
               className='p-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold shadow-lg transition'
             >
               Search
@@ -441,17 +441,17 @@ function App() {
             <button
               onClick={handleUseCurrentLocation}
               disabled={loadingLocation}
-              className='p-3 rounded-xl bg-green-600 hover:bg-green-700 text-white font-semibold shadow-lg transition disabled:opacity-50'
+              className='px-4 py-3 rounded-xl bg-green-600 hover:bg-green-700 text-white font-semibold shadow-lg transition disabled:opacity-50 whitespace-nowrap'
               title="Use Current Location"
             >
-              {loadingLocation ? "..." : "📍"}
+              {loadingLocation ? "Detecting..." : "Use Current Location"}
             </button>
 
             {showSuggestions && suggestions.length > 0 && (
               <div className="absolute top-full mt-2 w-full bg-white/95 backdrop-blur-md rounded-xl shadow-2xl overflow-hidden z-50 text-left border border-white/20">
                 {suggestions.map((suggestion) => (
-                  <div 
-                    key={suggestion.id || suggestion.url} 
+                  <div
+                    key={suggestion.id || suggestion.url}
                     className="px-4 py-3 hover:bg-blue-50 cursor-pointer text-gray-800 border-b border-gray-200 last:border-b-0 transition"
                     onClick={() => handleSuggestionClick(suggestion)}
                   >
@@ -462,13 +462,13 @@ function App() {
               </div>
             )}
           </div>
-          
+
           {recentSearches.length > 0 && (
             <div className="flex flex-wrap gap-2 justify-center mt-2">
               <span className="text-white/80 text-sm py-1">Recent:</span>
               {recentSearches.map((search, idx) => (
-                <button 
-                  key={idx} 
+                <button
+                  key={idx}
                   onClick={() => setCity(search)}
                   className="text-xs bg-white/20 hover:bg-white/30 text-white px-3 py-1 rounded-full transition"
                 >
@@ -478,7 +478,7 @@ function App() {
             </div>
           )}
         </div>
-        
+
         {error ? <ErrorBox /> : <WeatherDetail />}
       </main>
     </div>
