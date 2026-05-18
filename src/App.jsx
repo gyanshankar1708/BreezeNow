@@ -6,21 +6,24 @@ function App() {
   const [city, setCity] = useState("London");
   const [cityInfo, setCityInfo] = useState("");
   const [cityName, setCityName] = useState("London");
-  const [temperature, setTemperature] = useState(null);
-  const [latitude, setLatitude] = useState(null);
-  const [longitude, setLongitude] = useState(null);
-  const [moisture, setMoisture] = useState(null);
-  const [windSpeed, setWindSpeed] = useState(null);
-  const [pressure, setPressure] = useState(null);
-  const [humidity, setHumidity] = useState(null);
-  const [cloud, setCloud] = useState(null);
-  const [condition, setCondition] = useState(null);
-  const [icon, setIcon] = useState(null);
-  const [feelsLike, setFeelsLike] = useState(null);
-  const [uv, setUv] = useState(null);
-  const [error, setError] = useState(null);
   const [region, setRegion] = useState(null);
+  const [error, setError] = useState(null);
   const [loadingLocation, setLoadingLocation] = useState(false);
+
+  const [weather, setWeather] = useState({
+    temperature: null,
+    latitude: null,
+    longitude: null,
+    moisture: null,
+    windSpeed: null,
+    pressure: null,
+    humidity: null,
+    cloud: null,
+    condition: null,
+    icon: null,
+    feelsLike: null,
+    uv: null,
+  });
 
   useEffect(() => {
     const apiKey = import.meta.env.VITE_WEATHER_API_KEY;
@@ -36,19 +39,21 @@ function App() {
         const data = await response.json();
         console.log(data);
         setCityName(data.location.name);
-        setTemperature(data.current.temp_c);
-        setLatitude(data.location.lat);
-        setLongitude(data.location.lon);
-        setMoisture(data.current.dewpoint_c);
-        setWindSpeed(data.current.wind_kph);
-        setPressure(data.current.pressure_in);
-        setHumidity(data.current.humidity);
-        setCloud(data.current.cloud);
-        setCondition(data.current.condition.text);
-        setIcon(data.current.condition.icon);
-        setFeelsLike(data.current.feelslike_c);
-        setUv(data.current.uv);
         setRegion(data.location.region);
+        setWeather({
+          temperature: data.current.temp_c,
+          latitude: data.location.lat,
+          longitude: data.location.lon,
+          moisture: data.current.dewpoint_c,
+          windSpeed: data.current.wind_kph,
+          pressure: data.current.pressure_in,
+          humidity: data.current.humidity,
+          cloud: data.current.cloud,
+          condition: data.current.condition.text,
+          icon: data.current.condition.icon,
+          feelsLike: data.current.feelslike_c,
+          uv: data.current.uv,
+        });
       } catch (error) {
         setError("Error fetching data"+ error);
       }
@@ -97,48 +102,48 @@ function App() {
   const getWeatherInsights = () => {
   const insights = [];
 
-  if (temperature >= 35) {
+  if (weather.temperature >= 35) {
     insights.push({
       title: "Stay hydrated in high temperatures",
       description:
-        `Temperatures above ${temperature}°C — drink water regularly and avoid prolonged sun exposure.`,
+        `Temperatures above ${weather.temperature}°C — drink water regularly and avoid prolonged sun exposure.`,
       emoji: "🌡️",
       accent: "yellow",
     });
   }
 
-  if (uv >= 6) {
+  if (weather.uv >= 6) {
     insights.push({
       title: "High UV exposure today",
       description:
-        `UV index is currently ${uv}. Use sunscreen and avoid excessive sun exposure.`,
+        `UV index is currently ${weather.uv}. Use sunscreen and avoid excessive sun exposure.`,
       emoji: "🧴",
       accent: "yellow",
     });
   }
 
-  if (windSpeed >= 25) {
+  if (weather.windSpeed >= 25) {
     insights.push({
       title: "Strong winds expected outside",
       description:
-        `Wind speeds at ${windSpeed} KPH — be cautious while traveling outdoors.`,
+        `Wind speeds at ${weather.windSpeed} KPH — be cautious while traveling outdoors.`,
       emoji: "💨",
       accent: "blue",
     });
   }
 
-  if (humidity >= 80) {
+  if (weather.humidity >= 80) {
     insights.push({
       title: "High humidity levels today",
       description:
-        `Humidity is currently ${humidity}% which may make the weather feel warmer.`,
+        `Humidity is currently ${weather.humidity}% which may make the weather feel warmer.`,
       emoji: "💧",
       accent: "cyan",
     });
   }
 
   if (
-    condition?.toLowerCase().includes("rain")
+    weather.condition?.toLowerCase().includes("rain")
   ) {
     insights.push({
       title: "Carry an umbrella before heading out",
@@ -150,8 +155,8 @@ function App() {
   }
 
   if (
-    condition?.toLowerCase().includes("sunny") ||
-    condition?.toLowerCase().includes("clear")
+    weather.condition?.toLowerCase().includes("sunny") ||
+    weather.condition?.toLowerCase().includes("clear")
   ) {
     insights.push({
       title: "Great weather for outdoor activities",
@@ -163,8 +168,8 @@ function App() {
   }
 
   if (
-    condition?.toLowerCase().includes("overcast") ||
-    condition?.toLowerCase().includes("cloudy")
+    weather.condition?.toLowerCase().includes("overcast") ||
+    weather.condition?.toLowerCase().includes("cloudy")
   ) {
     insights.push({
       title: "Cloudy skies expected today",
@@ -176,9 +181,9 @@ function App() {
   }
 
   if (
-    condition?.toLowerCase().includes("mist") ||
-    condition?.toLowerCase().includes("fog") ||
-    condition?.toLowerCase().includes("haze")
+    weather.condition?.toLowerCase().includes("mist") ||
+    weather.condition?.toLowerCase().includes("fog") ||
+    weather.condition?.toLowerCase().includes("haze")
   ) {
     insights.push({
       title: "Reduced visibility outdoors",
@@ -190,7 +195,7 @@ function App() {
   }
 
   if (
-    condition?.toLowerCase().includes("thunder")
+    weather.condition?.toLowerCase().includes("thunder")
   ) {
     insights.push({
       title: "Thunderstorm conditions detected",
@@ -202,7 +207,7 @@ function App() {
   }
 
   if (
-    condition?.toLowerCase().includes("snow")
+    weather.condition?.toLowerCase().includes("snow")
   ) {
     insights.push({
       title: "Snowfall expected today",
@@ -213,7 +218,7 @@ function App() {
     });
   }
 
-  if (temperature <= 10) {
+  if (weather.temperature <= 10) {
     insights.push({
       title: "Cold weather detected",
       description:
@@ -242,49 +247,49 @@ function App() {
             <h1 className='text-4xl font-bold text-white'>{cityName}</h1>
             {region && <p className='text-white flex items-center gap-1'><span className='font-bold'>Region : </span> <span className='details region-detail'>{region}</span></p>}
             <div className="latt-long flex items-center gap-5">
-              <p className='text-white'><span className='font-bold'>Latitude : </span> <span className='details'>{latitude}</span></p>
-              <p className='text-white'><span className='font-bold'>Longitude : </span><span className='details'>{longitude}</span></p>
+              <p className='text-white'><span className='font-bold'>Latitude : </span> <span className='details'>{weather.latitude}</span></p>
+              <p className='text-white'><span className='font-bold'>Longitude : </span><span className='details'>{weather.longitude}</span></p>
             </div>
           </div>
           <div className="condition flex flex-col items-center gap-4 mt-6 justify-center">
-            {icon && <img className='icon' src={icon} alt="weather icon" width={100} />}
-            {condition && <p className='text-2xl font-semibold text-white'>{condition}</p>}
+            {weather.icon && <img className='icon' src={weather.icon} alt="weather icon" width={100} />}
+            {weather.condition && <p className='text-2xl font-semibold text-white'>{weather.condition}</p>}
           </div>
           <div className="temp flex flex-col items-center gap-4 justify-center">
-            {temperature !== null && <h1 className='text-6xl font-bold text-white'>{temperature}&#8451;</h1>}
-            {feelsLike !== null && <p className='text-xl font-semibold text-white'>Feels Like : {feelsLike}&#8451;</p>}
+            {weather.temperature !== null && <h1 className='text-6xl font-bold text-white'>{weather.temperature}&#8451;</h1>}
+            {weather.feelsLike !== null && <p className='text-xl font-semibold text-white'>Feels Like : {weather.feelsLike}&#8451;</p>}
           </div>
         </div>
         <div className="less-imp-datas mb-20">
           <div className="grid grid-cols-2 md:grid-cols-3 gap-10 mt-10">
-            {moisture !== null && <div className="card">
+            {weather.moisture !== null && <div className="card">
               <p className='text-lg font-semibold text-white'>
-                Dew Point : {moisture}&#8451;
+                Dew Point : {weather.moisture}&#8451;
               </p>
             </div>}
-            {windSpeed !== null && <div className="card">
+            {weather.windSpeed !== null && <div className="card">
               <p className='text-lg font-semibold text-white'>
-                Wind Speed : {windSpeed} KPH
+                Wind Speed : {weather.windSpeed} KPH
               </p>
             </div>}
-            {pressure !== null && <div className="card">
+            {weather.pressure !== null && <div className="card">
               <p className='text-lg font-semibold text-white'>
-                Pressure : {pressure} in
+                Pressure : {weather.pressure} in
               </p>
             </div>}
-            {humidity !== null && <div className="card">
+            {weather.humidity !== null && <div className="card">
               <p className='text-lg font-semibold text-white'>
-                Humidity : {humidity} %
+                Humidity : {weather.humidity} %
               </p>
             </div>}
-            {cloud !== null && <div className="card">
+            {weather.cloud !== null && <div className="card">
               <p className='text-lg font-semibold text-white'>
-                Cloud : {cloud} %
+                Cloud : {weather.cloud} %
               </p>
             </div>}
-            {uv !== null && <div className="card">
+            {weather.uv !== null && <div className="card">
               <p className='text-lg font-semibold text-white'>
-                UV Index : {uv}
+                UV Index : {weather.uv}
               </p>
             </div>}
           </div>
