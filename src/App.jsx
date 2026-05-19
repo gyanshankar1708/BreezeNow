@@ -218,7 +218,7 @@ function App() {
     });
   }
 
-  if (weather.temperature <= 10) {
+  if (typeof weather.temperature === "number" && weather.temperature <= 10) {
     insights.push({
       title: "Cold weather detected",
       description:
