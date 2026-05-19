@@ -41,7 +41,7 @@ function App() {
 
   useEffect(() => {
     const fetchSuggestions = async () => {
-      if (cityInfo.trim().length < 3) {
+      if (cityInfo.trim().length < 2) {
         setSuggestions([]);
         return;
       }
@@ -448,7 +448,24 @@ function App() {
             </button>
 
             {showSuggestions && suggestions.length > 0 && (
-              <div className="absolute top-full mt-2 w-full bg-white/95 backdrop-blur-md rounded-xl shadow-2xl overflow-hidden z-50 text-left border border-white/20">
+              <div
+                className="
+              absolute
+              top-full
+              mt-2
+              w-full
+              max-h-56
+              overflow-y-auto
+              bg-white/95
+              backdrop-blur-md
+              rounded-xl
+              shadow-2xl
+              z-50
+              text-left
+              border
+              border-white/20
+            "
+          >
                 {suggestions.map((suggestion) => (
                   <div
                     key={suggestion.id || suggestion.url}
