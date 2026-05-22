@@ -506,4 +506,4 @@ function App() {
     </div>
   )
 
-
+export default app;
