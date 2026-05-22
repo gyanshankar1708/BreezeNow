@@ -1,10 +1,14 @@
 import { useEffect, useState } from 'react'
 import './App.css'
 import Logo from './assets/Logo.png'
+import { Card } from './components/Card'
+import { FeaturesGrid } from './components/FeaturesGrid'
+import { Hero } from './components/Hero'
+import { ThemeToggle } from './components/ThemeToggle'
 
 function App() {
-  const [city, setCity] = useState("");
-  const [cityInfo, setCityInfo] = useState("");
+  const [city, setCity] = useState("Patna");
+  const [cityInfo, setCityInfo] = useState("Patna");
   const [weatherData, setWeatherData] = useState(null);
   const [forecastData, setForecastData] = useState(null);
   const [error, setError] = useState(null);
@@ -19,6 +23,14 @@ function App() {
   });
   const [backgroundClass, setBackgroundClass] = useState("bg-gradient-to-br from-blue-900 to-blue-600");
   const [loadingLocation, setLoadingLocation] = useState(false);
+  const [theme, setTheme] = useState(() => {
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme === 'light' || savedTheme === 'dark') {
+      return savedTheme;
+    }
+
+    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  });
 
   const [weather, setWeather] = useState({
     temperature: null,
@@ -36,23 +48,36 @@ function App() {
   });
 
   useEffect(() => {
-    // Geolocation on initial load
-    if ("geolocation" in navigator) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          setCity(`${position.coords.latitude},${position.coords.longitude}`);
-        },
-        (err) => {
-          console.log("Geolocation error", err);
-        },
-        { enableHighAccuracy: true, timeout: 5000, maximumAge: 0 }
-      );
-    }
-  }, []);
-
-  useEffect(() => {
     localStorage.setItem('recentSearches', JSON.stringify(recentSearches));
   }, [recentSearches]);
+
+  useEffect(() => {
+    localStorage.setItem('theme', theme);
+    document.documentElement.dataset.theme = theme;
+  }, [theme]);
+
+  const toggleTheme = () => {
+    setTheme((currentTheme) => (currentTheme === 'dark' ? 'light' : 'dark'));
+  };
+
+  const buildWeatherSummary = (data, useCelsius) => {
+    const { current, location } = data;
+
+    return {
+      temperature: useCelsius ? current.temp_c : current.temp_f,
+      latitude: location.lat,
+      longitude: location.lon,
+      moisture: useCelsius ? current.dewpoint_c : current.dewpoint_f,
+      windSpeed: current.wind_kph,
+      pressure: current.pressure_mb,
+      humidity: current.humidity,
+      cloud: current.cloud,
+      condition: current.condition.text,
+      icon: current.condition.icon.startsWith("//") ? `https:${current.condition.icon}` : current.condition.icon,
+      feelsLike: useCelsius ? current.feelslike_c : current.feelslike_f,
+      uv: current.uv,
+    };
+  };
 
   useEffect(() => {
     const fetchSuggestions = async () => {
@@ -134,6 +159,41 @@ function App() {
     }
 
   }, [city])
+
+  useEffect(() => {
+    if (weatherData) {
+      setWeather(buildWeatherSummary(weatherData, isCelsius));
+    }
+  }, [isCelsius, weatherData]);
+
+  const toggleUnit = () => {
+    setIsCelsius((current) => !current);
+  };
+
+  const handleSearch = () => {
+    const query = cityInfo.trim();
+
+    if (!query) {
+      setError("Please enter a city name");
+      return;
+    }
+
+    setError(null);
+    setCityInfo(query);
+    setShowSuggestions(false);
+    setCity(query);
+  };
+
+  const handleSuggestionClick = (suggestion) => {
+    const query = suggestion.region
+      ? `${suggestion.name}, ${suggestion.region}`
+      : suggestion.name;
+
+    setCityInfo(query);
+    setShowSuggestions(false);
+    setError(null);
+    setCity(query);
+  };
 
   const handleUseCurrentLocation = () => {
     if (!navigator.geolocation) {
@@ -316,159 +376,245 @@ function App() {
     const { current, location } = weatherData;
     const temp = isCelsius ? current.temp_c : current.temp_f;
     const feelsLike = isCelsius ? current.feelslike_c : current.feelslike_f;
-    const unit = isCelsius ? "℃" : "℉";
+    const unit = isCelsius ? "°C" : "°F";
     const insights = getWeatherInsights();
+    const cityName = location.name;
+    const region = location.region;
 
     return (
-      <div className="datas flex flex-col items-center justify-center gap-10">
-        <div className="imp-datas flex flex-col md:flex-row gap-10">
-          <div className="location-detail flex flex-col items-center gap-5 justify-center">
-            <h1 className='text-4xl font-bold text-white'>{cityName}</h1>
-            {region && <p className='text-white flex items-center gap-1'><span className='font-bold'>Region : </span> <span className='details region-detail'>{region}</span></p>}
-            <div className="latt-long flex items-center gap-5">
-              <p className='text-white'><span className='font-bold'>Latitude : </span> <span className='details'>{weather.latitude}</span></p>
-              <p className='text-white'><span className='font-bold'>Longitude : </span><span className='details'>{weather.longitude}</span></p>
+      <div className="weather-workspace">
+        <div className="weather-toolbar">
+          <div>
+            <p className="section-kicker">Live Weather</p>
+            <h2 className="text-3xl font-black tracking-tight m-0 text-current">Patna weather at a glance</h2>
+          </div>
+          <button onClick={toggleUnit} className="unit-switch">
+            Switch to {isCelsius ? '°F' : '°C'}
+          </button>
+        </div>
+
+        <div className="weather-current-panel weather-panel">
+          <div className="weather-current-overview">
+            <p className="weather-status">Current conditions</p>
+            <h3>{cityName}</h3>
+            <p>{region ? `${region}, ${location.country}` : location.country}</p>
+            <div className="weather-current">
+              <div className="weather-current-left">
+                {weather.icon && <img src={weather.icon} alt={weather.condition || 'Weather condition'} />}
+                <div>
+                  <strong>{weather.condition}</strong>
+                  <span>{location.localtime}</span>
+                </div>
+              </div>
+              <div className="weather-current-temp">
+                <strong>{temp}{unit}</strong>
+                <span>Feels like {feelsLike}{unit}</span>
+              </div>
             </div>
           </div>
-          <div className="condition flex flex-col items-center gap-4 mt-6 justify-center">
-            {weather.icon && <img className='icon' src={weather.icon} alt="weather icon" width={100} />}
-            {weather.condition && <p className='text-2xl font-semibold text-white'>{weather.condition}</p>}
-          </div>
-          <div className="temp flex flex-col items-center gap-4 justify-center">
-            {weather.temperature !== null && <h1 className='text-6xl font-bold text-white'>{weather.temperature}&#8451;</h1>}
-            {weather.feelsLike !== null && <p className='text-xl font-semibold text-white'>Feels Like : {weather.feelsLike}&#8451;</p>}
-          </div>
+
+          <div className="hero-chip">Lat {weather.latitude} / Lon {weather.longitude}</div>
         </div>
-        <div className="less-imp-datas mb-20">
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-10 mt-10">
-            {weather.moisture !== null && <div className="card">
-              <p className='text-lg font-semibold text-white'>
-                Dew Point : {weather.moisture}&#8451;
-              </p>
-            </div>}
-            {weather.windSpeed !== null && <div className="card">
-              <p className='text-lg font-semibold text-white'>
-                Wind Speed : {weather.windSpeed} KPH
-              </p>
-            </div>}
-            {weather.pressure !== null && <div className="card">
-              <p className='text-lg font-semibold text-white'>
-                Pressure : {weather.pressure} in
-              </p>
-            </div>}
-            {weather.humidity !== null && <div className="card">
-              <p className='text-lg font-semibold text-white'>
-                Humidity : {weather.humidity} %
-              </p>
-            </div>}
-            {weather.cloud !== null && <div className="card">
-              <p className='text-lg font-semibold text-white'>
-                Cloud : {weather.cloud} %
-              </p>
-            </div>}
-            {weather.uv !== null && <div className="card">
-              <p className='text-lg font-semibold text-white'>
-                UV Index : {weather.uv}
-              </p>
-            </div>}
-          </div>
 
-          {insights.length > 0 && (
-            <div className="advisory-section">
-              <div className="advisory-topline">
-                <div className="line"></div>
-                <p>WEATHER INSIGHTS</p>
-                <div className="line"></div>
-              </div>
+        <div className="weather-summary-grid">
+          <Card badge="Temperature" title={`${weather.temperature}${unit}`} text="Live temperature from WeatherAPI." subtle />
+          <Card badge="Wind" title={`${weather.windSpeed} KPH`} text="Wind speed and air movement." subtle />
+          <Card badge="Humidity" title={`${weather.humidity}%`} text="Moisture in the air right now." subtle />
+          <Card badge="Pressure" title={`${weather.pressure} mb`} text="Barometric pressure reading." subtle />
+          <Card badge="Dew point" title={`${weather.moisture}${unit}`} text="Perceived moisture point." subtle />
+          <Card badge="UV index" title={`${weather.uv}`} text="UV exposure guidance for the day." subtle />
+        </div>
 
-              <div className="advisory-header text-center flex-col md:flex-row">
-                <h2>🌤 Today's Advisory</h2>
-                <p>Based on current weather conditions</p>
-              </div>
-
-              <div className="advisory-grid">
-                {insights.map((insight, index) => (
-                  <div
-                    key={index}
-                    className={`advisory-card ${insight.accent}`}
-                  >
-                    <div className="advisory-icon text-white">
-                      {insight.emoji}
-                    </div>
-                    <div className="advisory-content">
-                      <h3>{insight.title}</h3>
-                      <p>{insight.description}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
+        {insights.length > 0 && (
+          <section className="section-block compact">
+            <div className="section-heading align-start">
+              <p className="section-kicker">Daily guidance</p>
+              <h2>What to keep in mind today</h2>
+              <p>Short, practical advice based on the live weather conditions in Patna.</p>
             </div>
-          )}
-        </div>
+
+            <FeaturesGrid>
+              {insights.map((insight, index) => (
+                <Card
+                  key={index}
+                  icon={<span aria-hidden="true">{insight.emoji}</span>}
+                  badge={insight.accent}
+                  title={insight.title}
+                  text={insight.description}
+                />
+              ))}
+            </FeaturesGrid>
+          </section>
+        )}
 
         {forecastData && forecastData.length > 0 && (
-          <div className="w-full mt-6 mb-20">
-            <h2 className="text-2xl font-bold text-white mb-6 text-center drop-shadow-md">3-Day Forecast</h2>
-            <div className="flex flex-col md:flex-row gap-6 justify-center">
+          <section className="section-block compact weather-metrics-grid">
+            <div className="section-heading align-start">
+              <p className="section-kicker">Forecast</p>
+              <h2>3-day outlook</h2>
+              <p>A quick read on the next few days so the app feels like a complete weather product, not just a lookup tool.</p>
+            </div>
+
+            <div className="forecast-grid">
               {forecastData.map((day) => {
                 const maxTemp = isCelsius ? day.day.maxtemp_c : day.day.maxtemp_f;
                 const minTemp = isCelsius ? day.day.mintemp_c : day.day.mintemp_f;
+
                 return (
-                  <div key={day.date} className="p-6 rounded-xl bg-white/20 shadow-lg flex flex-col items-center flex-1">
-                    <span className="text-white font-semibold text-lg">{new Date(day.date).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}</span>
-                    <img src={day.day.condition.icon} alt={day.day.condition.text} className="w-16 h-16 my-2 drop-shadow-md" />
-                    <div className="flex gap-3 items-center">
-                      <span className="text-xl font-bold text-white" title="High">{maxTemp}°</span>
-                      <span className="text-lg font-medium text-gray-300" title="Low">{minTemp}°</span>
-                    </div>
-                    <span className="text-gray-200 text-sm text-center mt-1">{day.day.condition.text}</span>
-                  </div>
-                )
+                  <article key={day.date} className="forecast-card">
+                    <p>{new Date(day.date).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}</p>
+                    <img src={day.day.condition.icon} alt={day.day.condition.text} />
+                    <strong>{maxTemp}{unit}</strong>
+                    <span>{minTemp}{unit}</span>
+                    <small>{day.day.condition.text}</small>
+                  </article>
+                );
               })}
             </div>
-          </div>
+          </section>
         )}
       </div>
     );
   }
 
-  return (
-    <div className={`min-h-screen w-full transition-colors duration-1000 ${backgroundClass}`}>
-      <nav className='flex items-center justify-between p-4 shadow-md bg-black/20'>
-        <img src={Logo} alt="Logo" width={150} />
-        <button onClick={toggleUnit} className="bg-white/30 hover:bg-white/40 text-white px-4 py-2 rounded-lg font-semibold transition">
-          Switch to {isCelsius ? "°F" : "°C"}
-        </button>
-      </nav>
+  const heroWeather = weatherData ? weather : {
+    temperature: '--',
+    condition: 'Searching for live data',
+    icon: null,
+    feelsLike: '--',
+    humidity: '--',
+    windSpeed: '--',
+  };
 
-      <main className='flex flex-col items-center justify-start pt-10 min-h-[calc(100vh-80px)]'>
-        <div className="input-container flex flex-col items-center gap-4 w-full max-w-md px-4 mb-8">
-          <div className="flex gap-2 w-full relative">
+  return (
+    <div className="app-shell">
+      <div className="page-shell">
+        <header className="topbar">
+          <a className="brand" href="#top" aria-label="BreezeNow home">
+            <img src={Logo} alt="BreezeNow" className="brand-mark" />
+            <span>
+              BreezeNow
+              <small>Weather, reimagined</small>
+            </span>
+          </a>
+
+          <div className="topbar-actions">
+            <a className="ghost-link" href="#weather">Weather</a>
+            <a className="ghost-link" href="#forecast">Forecast</a>
+            <ThemeToggle theme={theme} onToggle={toggleTheme} />
+          </div>
+        </header>
+
+        <Hero
+          kicker="Real-time weather"
+          headline={[
+            'A calmer way to check the ',
+            <span key="accent" className="accent-text">weather</span>,
+            ' every day.'
+          ]}
+          description="BreezeNow keeps the interface focused, fast, and easy to scan. Start with Patna, switch units instantly, and get the important details without noise."
+          actions={(
+            <>
+              <a className="primary-button" href="#weather">Explore live weather</a>
+              <a className="secondary-button" href="#forecast">See the forecast</a>
+            </>
+          )}
+        >
+          <div className="hero-art landing-hero-art">
+            <div className="hero-art-glow" />
+            <div className={`hero-device landing-device ${backgroundClass}`}>
+              <div className="hero-device-top">
+                <div className="weather-device-brand">
+                  <img src={Logo} alt="BreezeNow" />
+                  <div>
+                    <span>Live weather</span>
+                    <strong>{weatherData ? weatherData.location.name : 'Patna'}</strong>
+                  </div>
+                </div>
+                <div className="hero-chip">{isCelsius ? 'Celsius' : 'Fahrenheit'}</div>
+              </div>
+
+              <div className="hero-device-panel weather-current">
+                <div>
+                  <p>Condition</p>
+                  <strong>{heroWeather.condition}</strong>
+                </div>
+                <div className="hero-chip">{weatherData ? weatherData.location.country : 'India'}</div>
+              </div>
+
+              <div className="landing-stat-row">
+                <article>
+                  <strong>{heroWeather.temperature}{isCelsius ? '°C' : '°F'}</strong>
+                  <span>Feels like {heroWeather.feelsLike}{isCelsius ? '°C' : '°F'}</span>
+                </article>
+                <article>
+                  <strong>{heroWeather.humidity}%</strong>
+                  <span>Humidity and visibility snapshot</span>
+                </article>
+                <article>
+                  <strong>{heroWeather.windSpeed} KPH</strong>
+                  <span>Wind speed right now</span>
+                </article>
+                <article>
+                  <strong>{weatherData ? weatherData.forecast?.forecastday?.length || 0 : 3}</strong>
+                  <span>Forecast days ready</span>
+                </article>
+              </div>
+
+              <div className="hero-device-footer" aria-hidden="true">
+                <span />
+                <span />
+                <span />
+              </div>
+            </div>
+          </div>
+        </Hero>
+
+        <section className="section-block" id="weather">
+          <div className="section-heading">
+            <p className="section-kicker">Why it feels premium</p>
+            <h2>Focused weather cards instead of a cluttered dashboard.</h2>
+            <p>BreezeNow keeps the page visually light while still surfacing the details people actually check.</p>
+          </div>
+
+          <FeaturesGrid>
+            <Card badge="Fast" title="Instant city lookup" text="Search any city or pick a recent one without losing the page context." />
+            <Card badge="Clear" title="Readable temperature units" text="Celsius is the default, with one tap to switch units when needed." />
+            <Card badge="Useful" title="Advisories that matter" text="Short weather guidance appears only when the conditions justify it." />
+            <Card badge="Live" title="Forecasts with intent" text="A clean three-day outlook gives the page a complete, product-like feel." />
+          </FeaturesGrid>
+        </section>
+
+        <section className="section-block compact">
+          <div className="section-heading align-start">
+            <p className="section-kicker">Search</p>
+            <h2>Check a location in one line.</h2>
+            <p>Search is still available, but the presentation is calmer and closer to a polished landing page than a raw utility screen.</p>
+          </div>
+
+          <div className="weather-search">
+            <label className="sr-only" htmlFor="weather-city">City name</label>
             <input
+              id="weather-city"
               type="text"
-              placeholder='Enter City Name'
+              placeholder='Enter city name'
               value={cityInfo}
               onChange={handleChange}
               onFocus={() => setShowSuggestions(true)}
               onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
-              className='flex-1 border-2 border-white/40 bg-black/20 focus:bg-black/40 focus:border-white p-3 rounded-xl text-white outline-none placeholder-gray-300 transition'
+              className="weather-search-input"
               onKeyDown={(e) => {
                 if (e.key === 'Enter') handleSearch();
               }}
             />
-            <button
-              onClick={handleSearch}
-              className='p-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold shadow-lg transition'
-            >
-              Search
-            </button>
+            <button onClick={handleSearch} className="primary-button">Search</button>
             <button
               onClick={handleUseCurrentLocation}
               disabled={loadingLocation}
-              className='px-4 py-3 rounded-xl bg-green-600 hover:bg-green-700 text-white font-semibold shadow-lg transition disabled:opacity-50 whitespace-nowrap'
+              className="secondary-button"
               title="Use Current Location"
             >
-              {loadingLocation ? "Detecting..." : "Use Current Location"}
+              {loadingLocation ? 'Detecting...' : 'Use Current Location'}
             </button>
 
             {showSuggestions && suggestions.length > 0 && (
@@ -488,23 +634,27 @@ function App() {
           </div>
 
           {recentSearches.length > 0 && (
-            <div className="flex flex-wrap gap-2 justify-center mt-2">
-              <span className="text-white/80 text-sm py-1">Recent:</span>
+            <div className="recent-searches">
+              <span>Recent</span>
               {recentSearches.map((search, idx) => (
                 <button
                   key={idx}
                   onClick={() => setCity(search)}
-                  className="text-xs bg-white/20 hover:bg-white/30 text-white px-3 py-1 rounded-full transition"
+                  className="recent-chip"
                 >
                   {search}
                 </button>
               ))}
             </div>
           )}
-        </div>
+        </section>
 
-        {error ? <ErrorBox /> : <WeatherDetail />}
-      </main>
+        {error ? (
+          <div className="weather-alert">{error}</div>
+        ) : (
+          <WeatherDetail />
+        )}
+      </div>
     </div>
   )
   }
