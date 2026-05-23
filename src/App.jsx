@@ -3,6 +3,7 @@ import "./App.css";
 import Logo from "./assets/Logo.png";
 import { Card } from "./components/Card";
 import { BackToTop } from "./components/BackToTop";
+import { Footer } from "./components/Footer";
 import { FeaturesGrid } from "./components/FeaturesGrid";
 import { Hero } from "./components/Hero";
 import { ThemeToggle } from "./components/ThemeToggle";
@@ -967,6 +968,8 @@ const loadFavoriteCity = (cityName) => {
           <WeatherDetail />
         )}
       </div>
+
+      <Footer />
     </div>
   );
 }
