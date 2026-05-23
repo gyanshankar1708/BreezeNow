@@ -20,21 +20,6 @@ function App() {
   const [backgroundClass, setBackgroundClass] = useState("bg-gradient-to-br from-blue-900 to-blue-600");
   const [loadingLocation, setLoadingLocation] = useState(false);
 
-  const [weather, setWeather] = useState({
-    temperature: null,
-    latitude: null,
-    longitude: null,
-    moisture: null,
-    windSpeed: null,
-    pressure: null,
-    humidity: null,
-    cloud: null,
-    condition: null,
-    icon: null,
-    feelsLike: null,
-    uv: null,
-  });
-
   useEffect(() => {
     // Geolocation on initial load
     if ("geolocation" in navigator) {
@@ -172,133 +157,156 @@ function App() {
   const handleChange = (e) => {
     setCityInfo(e.target.value);
   }
+
+  const handleSearch = () => {
+    if (cityInfo.trim()) {
+      setCity(cityInfo.trim());
+      setCityInfo("");
+    }
+  }
+
+  const handleSuggestionClick = (suggestion) => {
+    setCity(suggestion.name);
+    setCityInfo("");
+  }
+
+  const toggleUnit = () => {
+    setIsCelsius(prev => !prev);
+  }
+
   const getWeatherInsights = () => {
-  const insights = [];
+    if (!weatherData) return [];
+    
+    const { current } = weatherData;
+    const temp = isCelsius ? current.temp_c : current.temp_f;
+    const humidity = current.humidity;
+    const windSpeed = current.wind_kph;
+    const uv = current.uv;
+    const conditionText = current.condition?.text?.toLowerCase() || "";
+    
+    const insights = [];
 
-  if (weather.temperature >= 35) {
-    insights.push({
-      title: "Stay hydrated in high temperatures",
-      description:
-        `Temperatures above ${weather.temperature}°C — drink water regularly and avoid prolonged sun exposure.`,
-      emoji: "🌡️",
-      accent: "yellow",
-    });
-  }
+    if (temp >= 35) {
+      insights.push({
+        title: "Stay hydrated in high temperatures",
+        description:
+          `Temperatures above ${Math.round(temp)}°${isCelsius ? "C" : "F"} — drink water regularly and avoid prolonged sun exposure.`,
+        emoji: "🌡️",
+        accent: "yellow",
+      });
+    }
 
-  if (weather.uv >= 6) {
-    insights.push({
-      title: "High UV exposure today",
-      description:
-        `UV index is currently ${weather.uv}. Use sunscreen and avoid excessive sun exposure.`,
-      emoji: "🧴",
-      accent: "yellow",
-    });
-  }
+    if (uv >= 6) {
+      insights.push({
+        title: "High UV exposure today",
+        description:
+          `UV index is currently ${uv}. Use sunscreen and avoid excessive sun exposure.`,
+        emoji: "🧴",
+        accent: "yellow",
+      });
+    }
 
-  if (weather.windSpeed >= 25) {
-    insights.push({
-      title: "Strong winds expected outside",
-      description:
-        `Wind speeds at ${weather.windSpeed} KPH — be cautious while traveling outdoors.`,
-      emoji: "💨",
-      accent: "blue",
-    });
-  }
+    if (windSpeed >= 25) {
+      insights.push({
+        title: "Strong winds expected outside",
+        description:
+          `Wind speeds at ${Math.round(windSpeed)} KPH — be cautious while traveling outdoors.`,
+        emoji: "💨",
+        accent: "blue",
+      });
+    }
 
-  if (weather.humidity >= 80) {
-    insights.push({
-      title: "High humidity levels today",
-      description:
-        `Humidity is currently ${weather.humidity}% which may make the weather feel warmer.`,
-      emoji: "💧",
-      accent: "cyan",
-    });
-  }
+    if (humidity >= 80) {
+      insights.push({
+        title: "High humidity levels today",
+        description:
+          `Humidity is currently ${humidity}% which may make the weather feel warmer.`,
+        emoji: "💧",
+        accent: "cyan",
+      });
+    }
 
-  if (
-    weather.condition?.toLowerCase().includes("rain")
-  ) {
-    insights.push({
-      title: "Carry an umbrella before heading out",
-      description:
-        "Rainy conditions are expected today. Keep an umbrella or raincoat handy.",
-      emoji: "🌧️",
-      accent: "purple",
-    });
-  }
+    if (conditionText.includes("rain")) {
+      insights.push({
+        title: "Carry an umbrella before heading out",
+        description:
+          "Rainy conditions are expected today. Keep an umbrella or raincoat handy.",
+        emoji: "🌧️",
+        accent: "purple",
+      });
+    }
 
-  if (
-    weather.condition?.toLowerCase().includes("sunny") ||
-    weather.condition?.toLowerCase().includes("clear")
-  ) {
-    insights.push({
-      title: "Great weather for outdoor activities",
-      description:
-        "Clear skies and pleasant visibility make this ideal for outdoor plans.",
-      emoji: "☀️",
-      accent: "green",
-    });
-  }
+    if (
+      conditionText.includes("sunny") ||
+      conditionText.includes("clear")
+    ) {
+      insights.push({
+        title: "Great weather for outdoor activities",
+        description:
+          "Clear skies and pleasant visibility make this ideal for outdoor plans.",
+        emoji: "☀️",
+        accent: "green",
+      });
+    }
 
-  if (
-    weather.condition?.toLowerCase().includes("overcast") ||
-    weather.condition?.toLowerCase().includes("cloudy")
-  ) {
-    insights.push({
-      title: "Cloudy skies expected today",
-      description:
-        "Dense cloud cover may reduce sunlight throughout the day.",
-      emoji: "☁️",
-      accent: "gray",
-    });
-  }
+    if (
+      conditionText.includes("overcast") ||
+      conditionText.includes("cloudy")
+    ) {
+      insights.push({
+        title: "Cloudy skies expected today",
+        description:
+          "Dense cloud cover may reduce sunlight throughout the day.",
+        emoji: "☁️",
+        accent: "gray",
+      });
+    }
 
-  if (
-    weather.condition?.toLowerCase().includes("mist") ||
-    weather.condition?.toLowerCase().includes("fog") ||
-    weather.condition?.toLowerCase().includes("haze")
-  ) {
-    insights.push({
-      title: "Reduced visibility outdoors",
-      description:
-        "Mist or fog conditions may affect visibility while driving or traveling.",
-      emoji: "🌫️",
-      accent: "cyan",
-    });
-  }
+    if (
+      conditionText.includes("mist") ||
+      conditionText.includes("fog") ||
+      conditionText.includes("haze")
+    ) {
+      insights.push({
+        title: "Reduced visibility outdoors",
+        description:
+          "Mist or fog conditions may affect visibility while driving or traveling.",
+        emoji: "🌫️",
+        accent: "cyan",
+      });
+    }
 
-  if (
-    weather.condition?.toLowerCase().includes("thunder")
-  ) {
-    insights.push({
-      title: "Thunderstorm conditions detected",
-      description:
-        "Take precautions and avoid open areas during thunderstorms.",
-      emoji: "⛈️",
-      accent: "purple",
-    });
-  }
+    if (conditionText.includes("thunder")) {
+      insights.push({
+        title: "Thunderstorm conditions detected",
+        description:
+          "Take precautions and avoid open areas during thunderstorms.",
+        emoji: "⛈️",
+        accent: "purple",
+      });
+    }
 
-  if (
-    weather.condition?.toLowerCase().includes("snow")
-  ) {
-    insights.push({
-      title: "Snowfall expected today",
-      description:
-        "Cold and snowy conditions may affect travel and outdoor activities.",
-      emoji: "❄️",
-      accent: "blue",
-    });
-  }
+    if (conditionText.includes("snow")) {
+      insights.push({
+        title: "Snowfall expected today",
+        description:
+          "Cold and snowy conditions may affect travel and outdoor activities.",
+        emoji: "❄️",
+        accent: "blue",
+      });
+    }
 
-  if (weather.temperature <= 10) {
-    insights.push({
-      title: "Cold weather detected",
-      description:
-        "Wear warm clothing and avoid prolonged exposure to cold weather.",
-      emoji: "🧥",
-      accent: "cyan",
-    });
+    if (temp <= 10) {
+      insights.push({
+        title: "Cold weather detected",
+        description:
+          `Wear warm clothing and avoid prolonged exposure to cold weather.`,
+        emoji: "🧥",
+        accent: "cyan",
+      });
+    }
+
+    return insights;
   }
 
   const ErrorBox = () => {
@@ -314,8 +322,9 @@ function App() {
     const { current, location } = weatherData;
     const temp = isCelsius ? current.temp_c : current.temp_f;
     const feelsLike = isCelsius ? current.feelslike_c : current.feelslike_f;
-    const unit = isCelsius ? "℃" : "℉";
     const insights = getWeatherInsights();
+    const cityName = location.name;
+    const region = location.region;
 
     return (
       <div className="datas flex flex-col items-center justify-center gap-10">
@@ -324,49 +333,49 @@ function App() {
             <h1 className='text-4xl font-bold text-white'>{cityName}</h1>
             {region && <p className='text-white flex items-center gap-1'><span className='font-bold'>Region : </span> <span className='details region-detail'>{region}</span></p>}
             <div className="latt-long flex items-center gap-5">
-              <p className='text-white'><span className='font-bold'>Latitude : </span> <span className='details'>{weather.latitude}</span></p>
-              <p className='text-white'><span className='font-bold'>Longitude : </span><span className='details'>{weather.longitude}</span></p>
+              <p className='text-white'><span className='font-bold'>Latitude : </span> <span className='details'>{location.lat}</span></p>
+              <p className='text-white'><span className='font-bold'>Longitude : </span><span className='details'>{location.lon}</span></p>
             </div>
           </div>
           <div className="condition flex flex-col items-center gap-4 mt-6 justify-center">
-            {weather.icon && <img className='icon' src={weather.icon} alt="weather icon" width={100} />}
-            {weather.condition && <p className='text-2xl font-semibold text-white'>{weather.condition}</p>}
+            {current.condition?.icon && <img className='icon' src={current.condition.icon} alt="weather icon" width={100} />}
+            {current.condition?.text && <p className='text-2xl font-semibold text-white'>{current.condition.text}</p>}
           </div>
           <div className="temp flex flex-col items-center gap-4 justify-center">
-            {weather.temperature !== null && <h1 className='text-6xl font-bold text-white'>{weather.temperature}&#8451;</h1>}
-            {weather.feelsLike !== null && <p className='text-xl font-semibold text-white'>Feels Like : {weather.feelsLike}&#8451;</p>}
+            {temp !== null && <h1 className='text-6xl font-bold text-white'>{Math.round(temp)}°{isCelsius ? "C" : "F"}</h1>}
+            {feelsLike !== null && <p className='text-xl font-semibold text-white'>Feels Like : {Math.round(feelsLike)}°{isCelsius ? "C" : "F"}</p>}
           </div>
         </div>
         <div className="less-imp-datas mb-20">
           <div className="grid grid-cols-2 md:grid-cols-3 gap-10 mt-10">
-            {weather.moisture !== null && <div className="card">
+            {current.dewpoint_c !== null && <div className="card">
               <p className='text-lg font-semibold text-white'>
-                Dew Point : {weather.moisture}&#8451;
+                Dew Point : {isCelsius ? Math.round(current.dewpoint_c) : Math.round(current.dewpoint_f)}°{isCelsius ? "C" : "F"}
               </p>
             </div>}
-            {weather.windSpeed !== null && <div className="card">
+            {current.wind_kph !== null && <div className="card">
               <p className='text-lg font-semibold text-white'>
-                Wind Speed : {weather.windSpeed} KPH
+                Wind Speed : {Math.round(current.wind_kph)} KPH
               </p>
             </div>}
-            {weather.pressure !== null && <div className="card">
+            {current.pressure_in !== null && <div className="card">
               <p className='text-lg font-semibold text-white'>
-                Pressure : {weather.pressure} in
+                Pressure : {current.pressure_in} in
               </p>
             </div>}
-            {weather.humidity !== null && <div className="card">
+            {current.humidity !== null && <div className="card">
               <p className='text-lg font-semibold text-white'>
-                Humidity : {weather.humidity} %
+                Humidity : {current.humidity} %
               </p>
             </div>}
-            {weather.cloud !== null && <div className="card">
+            {current.cloud !== null && <div className="card">
               <p className='text-lg font-semibold text-white'>
-                Cloud : {weather.cloud} %
+                Cloud : {current.cloud} %
               </p>
             </div>}
-            {weather.uv !== null && <div className="card">
+            {current.uv !== null && <div className="card">
               <p className='text-lg font-semibold text-white'>
-                UV Index : {weather.uv}
+                UV Index : {current.uv}
               </p>
             </div>}
           </div>
@@ -416,8 +425,8 @@ function App() {
                     <span className="text-white font-semibold text-lg">{new Date(day.date).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}</span>
                     <img src={day.day.condition.icon} alt={day.day.condition.text} className="w-16 h-16 my-2 drop-shadow-md" />
                     <div className="flex gap-3 items-center">
-                      <span className="text-xl font-bold text-white" title="High">{maxTemp}°</span>
-                      <span className="text-lg font-medium text-gray-300" title="Low">{minTemp}°</span>
+                      <span className="text-xl font-bold text-white" title="High">{Math.round(maxTemp)}°</span>
+                      <span className="text-lg font-medium text-gray-300" title="Low">{Math.round(minTemp)}°</span>
                     </div>
                     <span className="text-gray-200 text-sm text-center mt-1">{day.day.condition.text}</span>
                   </div>
