@@ -890,7 +890,10 @@ function App() {
               {recentSearches.map((search, idx) => (
                 <button
                   key={idx}
-                  onClick={() => setCity(search)}
+                  onClick={() => {
+                    setCity(search);
+                    setCityInfo(search);
+                  }}
                   className="recent-chip"
                 >
                   {search}
