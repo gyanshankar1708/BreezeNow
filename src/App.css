@@ -1372,3 +1372,45 @@
     align-items: flex-start;
   }
 }
+
+.skeleton {
+  display: inline-block;
+  min-height: 1rem;
+  border-radius: 12px;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.14) 25%,
+    rgba(255, 255, 255, 0.28) 50%,
+    rgba(255, 255, 255, 0.14) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.4s infinite;
+}
+
+[data-theme="light"] .skeleton {
+  background: linear-gradient(
+    90deg,
+    rgba(0, 0, 0, 0.06) 25%,
+    rgba(0, 0, 0, 0.12) 50%,
+    rgba(0, 0, 0, 0.06) 75%
+  );
+  background-size: 200% 100%;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+[data-theme="dark"] .landing-stat-row span {
+  color: rgba(255, 255, 255, 0.78);
+}
+
+[data-theme="dark"] .landing-stat-row article {
+  color: rgba(255, 255, 255, 0.92);
+}
