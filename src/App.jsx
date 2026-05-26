@@ -548,97 +548,85 @@ function App() {
             </button>
           </div>
         </div>
+<div className="weather-summary-grid">
+  <Card
+    badge="Temperature"
+    title={
+      weather.temperature === null ? (
+        <Skeleton className="h-8 w-24" />
+      ) : (
+        `${weather.temperature}${unit}`
+      )
+    }
+    text="Live temperature from WeatherAPI."
+    subtle
+  />
 
-        <div className="weather-summary-grid">
-          <Card
-            badge="Temperature"
- HEAD
-            title={
-  weather.temperature === null ? (
-    <Skeleton className="h-8 w-24" />
-  ) : (
-    `${weather.temperature}${unit}`
-  )
-}
+  <Card
+    badge="Wind"
+    title={
+      weather.windSpeed === null ? (
+        <Skeleton className="h-8 w-24" />
+      ) : (
+        `${weather.windSpeed} KPH`
+      )
+    }
+    text="Wind speed and air movement."
+    subtle
+  />
 
-            title={formatTemperature(weather.temperature, isCelsius)}
- main
-            text="Live temperature from WeatherAPI."
-            subtle
-          />
-          <Card
-            badge="Wind"
- HEAD
-            title={
-  weather.windSpeed === null ? (
-    <Skeleton className="h-8 w-24" />
-  ) : (
-    `${weather.windSpeed} KPH`
-  )
-}
+  <Card
+    badge="Humidity"
+    title={
+      weather.humidity === null ? (
+        <Skeleton className="h-8 w-24" />
+      ) : (
+        `${weather.humidity}%`
+      )
+    }
+    text="Moisture in the air right now."
+    subtle
+  />
 
-            title={formatWindSpeed(weather.windSpeed, isCelsius)}
- main
-            text="Wind speed and air movement."
-            subtle
-          />
-          <Card
-            badge="Humidity"
-            title={
-  weather.humidity === null ? (
-    <Skeleton className="h-8 w-24" />
-  ) : (
-    `${weather.humidity}%`
-  )
-}
-            text="Moisture in the air right now."
-            subtle
-          />
-          <Card
-            badge="Pressure"
- HEAD
-            title={
-  weather.pressure === null ? (
-    <Skeleton className="h-8 w-24" />
-  ) : (
-    `${weather.pressure} mb`
-  )
-}
+  <Card
+    badge="Pressure"
+    title={
+      weather.pressure === null ? (
+        <Skeleton className="h-8 w-24" />
+      ) : (
+        `${weather.pressure} mb`
+      )
+    }
+    text="Barometric pressure reading."
+    subtle
+  />
 
-            title={formatPressure(weather.pressure, isCelsius)}
- main
-            text="Barometric pressure reading."
-            subtle
-          />
-          <Card
-            badge="Dew point"
- HEAD
-           title={
-  weather.moisture === null ? (
-    <Skeleton className="h-8 w-20" />
-  ) : (
-    `${weather.moisture}${unit}`
-  )
-}
+  <Card
+    badge="Dew point"
+    title={
+      weather.moisture === null ? (
+        <Skeleton className="h-8 w-20" />
+      ) : (
+        `${weather.moisture}${unit}`
+      )
+    }
+    text="Perceived moisture point."
+    subtle
+  />
 
-            title={formatTemperature(weather.moisture, isCelsius)}
- main
-            text="Perceived moisture point."
-            subtle
-          />
-          <Card
-            badge="UV index"
-            title={
-  weather.uv === null ? (
-    <Skeleton className="h-8 w-24" />
-  ) : (
-    `${weather.uv}`
-  )
-}
-            text="UV exposure guidance for the day."
-            subtle
-          />
-        </div>
+  <Card
+    badge="UV index"
+    title={
+      weather.uv === null ? (
+        <Skeleton className="h-8 w-24" />
+      ) : (
+        `${weather.uv}`
+      )
+    }
+    text="UV exposure guidance for the day."
+    subtle
+  />
+</div>
 
         {insights.length > 0 && (
           <section className="section-block compact">
@@ -1080,10 +1068,12 @@ function App() {
 )}
 
         {error ? (
-          <div className="weather-alert">{error}</div>
-        ) : (   
-          <WeatherDetail />
-        )}
+  <div className="weather-alert">{error}</div>
+) : (
+  <WeatherDetail />
+)}
+
+<Footer />
       </div>
     </div>
   );

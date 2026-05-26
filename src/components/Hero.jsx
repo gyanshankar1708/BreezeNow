@@ -1,6 +1,6 @@
 export function Hero({ kicker, headline, description, actions, children }) {
   return (
-    <section className="hero-section">
+    <section id="weather" className="hero-section">
       <div className="hero-copy">
         <p className="section-kicker">{kicker}</p>
         <h1>{headline}</h1>

@@ -17,7 +17,7 @@ const Footer = () => {
       </p>
 
       <div className="footer-bottom">
-        © 2025 BreezeNow
+        © 2026 BreezeNow
       </div>
     </footer>
   );
