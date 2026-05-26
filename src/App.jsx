@@ -611,6 +611,20 @@ function App() {
           </section>
         )}
 
+        <section className="section-block compact" id="map">
+          <WeatherMap
+            weatherData={weatherData}
+            isCelsius={isCelsius}
+            apiKey={import.meta.env.VITE_WEATHER_API_KEY}
+            theme={theme}
+            onSelectLocation={(newCity) => {
+              setCity(newCity);
+              setCityInfo(newCity);
+              window.location.hash = "#top";
+            }}
+          />
+        </section>
+
         {forecastData && forecastData.length > 0 && (
           <section className="section-block compact weather-metrics-grid" id="forecast">
             <div className="section-heading align-start">
@@ -699,24 +713,27 @@ function App() {
             >
              ☆ Favorites
             </button>
-            <button
-              className={`ghost-link ${activeTab === "weather" ? "active" : ""}`}
-              onClick={() => {
-                setActiveTab("weather");
-                window.location.hash = "#weather";
-              }}
+            <a 
+              className="ghost-link" 
+              href="#weather"
+              onClick={() => setActiveTab("weather")}
             >
-              Live Weather
-            </button>
-            <button
-              className={`ghost-link ${activeTab === "map" ? "active" : ""}`}
-              onClick={() => {
-                setActiveTab("map");
-                window.location.hash = "#weather";
-              }}
+              Weather
+            </a>
+            <a 
+              className="ghost-link" 
+              href="#map"
+              onClick={() => setActiveTab("weather")}
             >
-              🗺️ Weather Map
-            </button>
+              Weather Map
+            </a>
+            <a 
+              className="ghost-link" 
+              href="#forecast"
+              onClick={() => setActiveTab("weather")}
+            >
+              Forecast
+            </a>
             <ThemeToggle theme={theme} onToggle={toggleTheme} />
           </div>
         </header>
@@ -1011,19 +1028,7 @@ function App() {
 </div>
 )}
 
-        {activeTab === "map" ? (
-          <WeatherMap
-            weatherData={weatherData}
-            isCelsius={isCelsius}
-            apiKey={import.meta.env.VITE_WEATHER_API_KEY}
-            theme={theme}
-            onSelectLocation={(newCity) => {
-              setCity(newCity);
-              setCityInfo(newCity);
-              setActiveTab("weather");
-            }}
-          />
-        ) : error ? (
+        {error ? (
           <div className="weather-alert">{error}</div>
         ) : (   
           <WeatherDetail />
