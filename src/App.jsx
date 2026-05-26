@@ -1,5 +1,5 @@
 import Skeleton from "./components/Skeleton";
-
+import Footer from "./components/Footer";
 import { useEffect, useState } from "react";
 import "./App.css";
 import Logo from "./assets/Logo.png";
@@ -8,6 +8,12 @@ import { BackToTop } from "./components/BackToTop";
 import { FeaturesGrid } from "./components/FeaturesGrid";
 import { Hero } from "./components/Hero";
 import { ThemeToggle } from "./components/ThemeToggle";
+import {
+  formatTemperature,
+  formatWindSpeed,
+  formatPressure,
+  validateWeatherData,
+} from "./utils/weatherUtils";
 
 function App() {
   const [city, setCity] = useState(() => {
@@ -151,6 +157,13 @@ function App() {
         }
         setError(null);
         const data = await response.json();
+
+        // Validate weather data
+        if (!validateWeatherData(data)) {
+          setError("Invalid weather data received");
+          setWeatherData(null);
+          return;
+        }
 
         setWeatherData(data);
         setForecastData(data.forecast?.forecastday || []);
@@ -475,8 +488,13 @@ function App() {
               {cityName} weather at a glance
             </h2>
           </div>
-          <button onClick={toggleUnit} className="unit-switch" >
-            Switch to {isCelsius ? "°F" : "°C"}
+          <button 
+            onClick={toggleUnit} 
+            className="unit-switch"
+            title={`Switch to ${isCelsius ? "Fahrenheit" : "Celsius"}`}
+            aria-label={`Switch to ${isCelsius ? "Fahrenheit" : "Celsius"}`}
+          >
+            {isCelsius ? "°C" : "°F"} / Switch to {isCelsius ? "°F" : "°C"}
           </button>
         </div>
 
@@ -534,6 +552,7 @@ function App() {
         <div className="weather-summary-grid">
           <Card
             badge="Temperature"
+ HEAD
             title={
   weather.temperature === null ? (
     <Skeleton className="h-8 w-24" />
@@ -541,11 +560,15 @@ function App() {
     `${weather.temperature}${unit}`
   )
 }
+
+            title={formatTemperature(weather.temperature, isCelsius)}
+ main
             text="Live temperature from WeatherAPI."
             subtle
           />
           <Card
             badge="Wind"
+ HEAD
             title={
   weather.windSpeed === null ? (
     <Skeleton className="h-8 w-24" />
@@ -553,6 +576,9 @@ function App() {
     `${weather.windSpeed} KPH`
   )
 }
+
+            title={formatWindSpeed(weather.windSpeed, isCelsius)}
+ main
             text="Wind speed and air movement."
             subtle
           />
@@ -570,6 +596,7 @@ function App() {
           />
           <Card
             badge="Pressure"
+ HEAD
             title={
   weather.pressure === null ? (
     <Skeleton className="h-8 w-24" />
@@ -577,11 +604,15 @@ function App() {
     `${weather.pressure} mb`
   )
 }
+
+            title={formatPressure(weather.pressure, isCelsius)}
+ main
             text="Barometric pressure reading."
             subtle
           />
           <Card
             badge="Dew point"
+ HEAD
            title={
   weather.moisture === null ? (
     <Skeleton className="h-8 w-20" />
@@ -589,6 +620,9 @@ function App() {
     `${weather.moisture}${unit}`
   )
 }
+
+            title={formatTemperature(weather.moisture, isCelsius)}
+ main
             text="Perceived moisture point."
             subtle
           />
@@ -942,7 +976,10 @@ function App() {
               {recentSearches.map((search, idx) => (
                 <button
                   key={idx}
-                  onClick={() => setCity(search)}
+                  onClick={() => {
+                    setCity(search);
+                    setCityInfo(search);
+                  }}
                   className="recent-chip"
                 >
                   {search}
