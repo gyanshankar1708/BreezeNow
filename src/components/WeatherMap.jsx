@@ -179,9 +179,6 @@ export default function WeatherMap({ weatherData, isCelsius, apiKey, theme, onSe
             <span class="popup-stat-val">${loc.cloud}%</span>
           </div>
         </div>
-        <button class="popup-cta-btn" id="cta-btn-${loc.lat.toFixed(4).replace(".", "-")}-${loc.lon.toFixed(4).replace(".", "-")}">
-          View Detailed Forecast
-        </button>
       </div>
     `;
   };
