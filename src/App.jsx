@@ -1,3 +1,4 @@
+import Footer from "./components/Footer";
 import { useEffect, useState } from "react";
 import "./App.css";
 import Logo from "./assets/Logo.png";
@@ -675,6 +676,7 @@ function App() {
 
   return (
     <div className="app-shell">
+    <Footer />
       <BackToTop />
       <div className="page-shell">
         <header className="topbar">
