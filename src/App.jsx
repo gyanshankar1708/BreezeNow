@@ -16,6 +16,7 @@ import {
   formatPressure,
   validateWeatherData,
 } from "./utils/weatherUtils";
+import HourlyForecast from "./components/HourlyForecast";
 
 function App() {
   const [city, setCity] = useState(() => {
@@ -26,6 +27,7 @@ function App() {
   });
   const [weatherData, setWeatherData] = useState(null);
   const [forecastData, setForecastData] = useState(null);
+  const [hourlyData, setHourlyData] = useState([]);
   const [error, setError] = useState(null);
 
   // New States
@@ -169,6 +171,7 @@ function App() {
 
         setWeatherData(data);
         setForecastData(data.forecast?.forecastday || []);
+        setHourlyData(data.forecast?.forecastday?.[0]?.hour || []);
 
         const locationName = data.location.name;
         if (!city.includes(",")) {
@@ -483,14 +486,14 @@ function App() {
       const data = await response.json();
       setWeather(data);
     };
-    useEffect(() => {if (city) {getWeather(city);}}, [city]);
+    useEffect(() => { if (city) { getWeather(city); } }, [city]);
     return (
       <div>
         {weather && weather.forecast && (
-        <WeatherCharts
-          forecastData={weather.forecast.forecastday}
-        />
-      )}
+          <WeatherCharts
+            forecastData={weather.forecast.forecastday}
+          />
+        )}
       </div>
     );
   }
@@ -514,8 +517,8 @@ function App() {
               {cityName} weather at a glance
             </h2>
           </div>
-          <button 
-            onClick={toggleUnit} 
+          <button
+            onClick={toggleUnit}
             className="unit-switch"
             title={`Switch to ${isCelsius ? "Fahrenheit" : "Celsius"}`}
             aria-label={`Switch to ${isCelsius ? "Fahrenheit" : "Celsius"}`}
@@ -564,9 +567,8 @@ function App() {
 
             <button
               onClick={saveCity}
-              className={`save-city-button ${
-                isCitySaved(cityName) ? "saved" : ""
-              }`}
+              className={`save-city-button ${isCitySaved(cityName) ? "saved" : ""
+                }`}
             >
               {isCitySaved(cityName)
                 ? "Saved"
@@ -578,82 +580,88 @@ function App() {
         <div className="weather-summary-grid">
           <Card
             badge="Temperature"
-title={
-  !weatherData ? (
-    <Skeleton className="h-8 w-24" />
-  ) : (
-    `${weather.temperature}${unit}`
-  )
-}
+            title={
+              !weatherData ? (
+                <Skeleton className="h-8 w-24" />
+              ) : (
+                `${weather.temperature}${unit}`
+              )
+            }
             text="Live temperature from WeatherAPI."
             subtle
           />
           <Card
             badge="Wind"
-title={
-  !weatherData ? (
-    <Skeleton className="h-8 w-24" />
-  ) : (
-    `${weather.windSpeed} KPH`
-  )
-}
-            
+            title={
+              !weatherData ? (
+                <Skeleton className="h-8 w-24" />
+              ) : (
+                `${weather.windSpeed} KPH`
+              )
+            }
+
             text="Wind speed and air movement."
             subtle
           />
           <Card
             badge="Humidity"
-title={
-  !weatherData ? (
-    <Skeleton className="h-8 w-24" />
-  ) : (
-    `${weather.humidity}%`
-  )
-}
+            title={
+              !weatherData ? (
+                <Skeleton className="h-8 w-24" />
+              ) : (
+                `${weather.humidity}%`
+              )
+            }
             text="Moisture in the air right now."
             subtle
           />
           <Card
             badge="Pressure"
-title={
-  !weatherData ? (
-    <Skeleton className="h-8 w-24" />
-  ) : (
-    `${weather.pressure} mb`
-  )
-}
-            
+            title={
+              !weatherData ? (
+                <Skeleton className="h-8 w-24" />
+              ) : (
+                `${weather.pressure} mb`
+              )
+            }
+
             text="Barometric pressure reading."
             subtle
           />
           <Card
             badge="Dew point"
-title={
-  !weatherData ? (
-    <Skeleton className="h-8 w-24" />
-  ) : (
-    `${weather.moisture}${unit}`
-  )
-}
+            title={
+              !weatherData ? (
+                <Skeleton className="h-8 w-24" />
+              ) : (
+                `${weather.moisture}${unit}`
+              )
+            }
             text="Perceived moisture point."
             subtle
           />
           <Card
             badge="UV index"
-title={
-  !weatherData ? (
-    <Skeleton className="h-8 w-24" />
-  ) : (
-    `${weather.uv}`
-  )
-}
+            title={
+              !weatherData ? (
+                <Skeleton className="h-8 w-24" />
+              ) : (
+                `${weather.uv}`
+              )
+            }
             text="UV exposure guidance for the day."
             subtle
           />
         </div>
+
         <div>
-          <WeatherChart/>
+          <HourlyForecast hourlyData={hourlyData} />
         </div>
+
+        <div>
+          <WeatherChart />
+        </div>
+
         {insights.length > 0 && (
           <section className="section-block compact">
             <div className="section-heading align-start">
@@ -733,13 +741,13 @@ title={
   const heroWeather = weatherData
     ? weather
     : {
-        temperature: "--",
-        condition: "Searching for live data",
-        icon: null,
-        feelsLike: "--",
-        humidity: "--",
-        windSpeed: "--",
-      };
+      temperature: "--",
+      condition: "Searching for live data",
+      icon: null,
+      feelsLike: "--",
+      humidity: "--",
+      windSpeed: "--",
+    };
 
   return (
     <div className="app-shell">
@@ -759,7 +767,7 @@ title={
               className="ghost-link"
               onClick={() => setActiveTab("favorites")}
             >
-             ☆ Favorites
+              ☆ Favorites
             </button>
             <a className="ghost-link" href="#weather">
               Weather
@@ -820,63 +828,63 @@ title={
                 </div>
               </div>
 
-             <div className="landing-stat-row">
-  <article>
-    <strong>
-      {!weatherData ? (
-        <Skeleton className="h-8 w-24" />
-      ) : (
-        <>
-          {heroWeather.temperature}
-          {isCelsius ? "°C" : "°F"}
-        </>
-      )}
-    </strong>
-    <span>
-      {!weatherData ? (
-        <Skeleton className="h-4 w-24" />
-      ) : (
-        <>
-          Feels like {heroWeather.feelsLike}
-          {isCelsius ? "°C" : "°F"}
-        </>
-      )}
-    </span>
-  </article>
+              <div className="landing-stat-row">
+                <article>
+                  <strong>
+                    {!weatherData ? (
+                      <Skeleton className="h-8 w-24" />
+                    ) : (
+                      <>
+                        {heroWeather.temperature}
+                        {isCelsius ? "°C" : "°F"}
+                      </>
+                    )}
+                  </strong>
+                  <span>
+                    {!weatherData ? (
+                      <Skeleton className="h-4 w-24" />
+                    ) : (
+                      <>
+                        Feels like {heroWeather.feelsLike}
+                        {isCelsius ? "°C" : "°F"}
+                      </>
+                    )}
+                  </span>
+                </article>
 
-  <article>
-    <strong>
-      {!weatherData ? (
-        <Skeleton className="h-8 w-20" />
-      ) : (
-        `${heroWeather.humidity}%`
-      )}
-    </strong>
-    <span>Humidity and visibility snapshot</span>
-  </article>
+                <article>
+                  <strong>
+                    {!weatherData ? (
+                      <Skeleton className="h-8 w-20" />
+                    ) : (
+                      `${heroWeather.humidity}%`
+                    )}
+                  </strong>
+                  <span>Humidity and visibility snapshot</span>
+                </article>
 
-  <article>
-    <strong>
-      {!weatherData ? (
-        <Skeleton className="h-8 w-24" />
-      ) : (
-        `${heroWeather.windSpeed} KPH`
-      )}
-    </strong>
-    <span>Wind speed right now</span>
-  </article>
+                <article>
+                  <strong>
+                    {!weatherData ? (
+                      <Skeleton className="h-8 w-24" />
+                    ) : (
+                      `${heroWeather.windSpeed} KPH`
+                    )}
+                  </strong>
+                  <span>Wind speed right now</span>
+                </article>
 
-  <article>
-    <strong>
-      {!weatherData ? (
-        <Skeleton className="h-8 w-10" />
-      ) : (
-        weatherData.forecast?.forecastday?.length || 0
-      )}
-    </strong>
-    <span>Forecast days ready</span>
-  </article>
-</div>
+                <article>
+                  <strong>
+                    {!weatherData ? (
+                      <Skeleton className="h-8 w-10" />
+                    ) : (
+                      weatherData.forecast?.forecastday?.length || 0
+                    )}
+                  </strong>
+                  <span>Forecast days ready</span>
+                </article>
+              </div>
 
               <div className="hero-device-footer" aria-hidden="true">
                 <span />
@@ -999,100 +1007,99 @@ title={
             </div>
           )}
         </section>
-{activeTab === "favorites" && (
-  <div className="favorites-modal-overlay">
-  <div className="favorites-modal">
-    <div className="favorites-header">
-      <div>
-        <p className="section-kicker">Starred cities</p>
-        <h2>Your saved locations</h2>
-      </div>
+        {activeTab === "favorites" && (
+          <div className="favorites-modal-overlay">
+            <div className="favorites-modal">
+              <div className="favorites-header">
+                <div>
+                  <p className="section-kicker">Starred cities</p>
+                  <h2>Your saved locations</h2>
+                </div>
 
-      {favoriteCities.length > 0 && (
-        <span className="favorites-helper">
-          Tap a card to load
-        </span>
-      )}
-      <button
-  className="favorites-close"
-  onClick={() => setActiveTab("weather")}
->
-  ✕
-</button>
-    </div>
-
-    {favoriteCities.length === 0 ? (
-      <div className="favorites-empty">
-        <div className="favorites-empty-icon">
-          ☆
-        </div>
-
-        <h3>No starred cities yet</h3>
-
-        <p>
-          Search for a city and tap "Save city"
-          to add it here for quick access.
-        </p>
-      </div>
-    ) : (
-      <div className="favorites-grid">
-        {favoriteCities.map((cityCard) => (
-          <div
-            key={cityCard.name}
-            className={`favorite-card ${
-              cityCard.name === weatherData?.location?.name
-                ? "active"
-                : ""
-            }`}
-            onClick={() =>
-              loadFavoriteCity(cityCard.name)
-            }
-          >
-            <button
-              className="favorite-remove"
-              onClick={(e) => {
-                e.stopPropagation();
-                removeCity(cityCard.name);
-              }}
-            >
-              × Remove
-            </button>
-
-            <div className="favorite-card-top">
-              <h3>{cityCard.name}</h3>
-
-              <p>
-                {cityCard.region},{" "}
-                {cityCard.country}
-              </p>
-            </div>
-
-            <div className="favorite-weather">
-              <span>{cityCard.condition}</span>
-
-              <strong>
-                {cityCard.temp}
-                {isCelsius ? "°C" : "°F"}
-              </strong>
-            </div>
-
-            {cityCard.name ===
-              weatherData?.location?.name && (
-              <div className="favorite-active">
-                Active
+                {favoriteCities.length > 0 && (
+                  <span className="favorites-helper">
+                    Tap a card to load
+                  </span>
+                )}
+                <button
+                  className="favorites-close"
+                  onClick={() => setActiveTab("weather")}
+                >
+                  ✕
+                </button>
               </div>
-            )}
+
+              {favoriteCities.length === 0 ? (
+                <div className="favorites-empty">
+                  <div className="favorites-empty-icon">
+                    ☆
+                  </div>
+
+                  <h3>No starred cities yet</h3>
+
+                  <p>
+                    Search for a city and tap "Save city"
+                    to add it here for quick access.
+                  </p>
+                </div>
+              ) : (
+                <div className="favorites-grid">
+                  {favoriteCities.map((cityCard) => (
+                    <div
+                      key={cityCard.name}
+                      className={`favorite-card ${cityCard.name === weatherData?.location?.name
+                          ? "active"
+                          : ""
+                        }`}
+                      onClick={() =>
+                        loadFavoriteCity(cityCard.name)
+                      }
+                    >
+                      <button
+                        className="favorite-remove"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          removeCity(cityCard.name);
+                        }}
+                      >
+                        × Remove
+                      </button>
+
+                      <div className="favorite-card-top">
+                        <h3>{cityCard.name}</h3>
+
+                        <p>
+                          {cityCard.region},{" "}
+                          {cityCard.country}
+                        </p>
+                      </div>
+
+                      <div className="favorite-weather">
+                        <span>{cityCard.condition}</span>
+
+                        <strong>
+                          {cityCard.temp}
+                          {isCelsius ? "°C" : "°F"}
+                        </strong>
+                      </div>
+
+                      {cityCard.name ===
+                        weatherData?.location?.name && (
+                          <div className="favorite-active">
+                            Active
+                          </div>
+                        )}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
-        ))}
-      </div>
-    )}
-    </div>
-</div>
-)}
+        )}
 
         {error ? (
           <div className="weather-alert">{error}</div>
-        ) : (   
+        ) : (
           <WeatherDetail />
         )}
       </div>
