@@ -910,6 +910,12 @@
   font-weight: 800;
 }
 
+.weather-device-brand div {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
 .weather-device-brand img,
 .weather-device-brand svg {
   width: 44px;
@@ -947,7 +953,11 @@
   gap: 12px;
   font-weight: 700;
 }
-
+.weather-current-left div {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
 .weather-current-left img,
 .weather-current-left svg {
   width: 44px;
@@ -957,6 +967,7 @@
 .weather-current-left svg {
   fill: currentColor;
 }
+
 
 .weather-current-temp strong {
   display: block;
