@@ -1417,9 +1417,10 @@
   100% {
     background-position: -200% 0;
   }
+}
+
 .weather-trends {
   margin-top: 3rem;
-}
 }
 
 .charts-header {
