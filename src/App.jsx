@@ -343,7 +343,6 @@ function App() {
   };
 
   const getWeatherInsights = () => {
-    const insights = [];
 
     const unit = isCelsius ? "°C" : "°F";
 const insights = [];
@@ -514,7 +513,7 @@ const insights = [];
           <div>
             <p className="section-kicker">Live Weather </p>
             <h2 className="text-3xl font-black tracking-tight m-0 text-current">
-              {cityName} weather at a glance
+              {cityName}'s weather at a glance
             </h2>
           </div>
           <button 
@@ -663,8 +662,7 @@ title={
               <p className="section-kicker">Daily guidance</p>
               <h2>What to keep in mind today</h2>
               <p>
-                Short, practical advice based on the live weather conditions in {cityName}.
-              </p>
+Weather-based recommendations for today in {cityName}.              </p>
             </div>
 
             <FeaturesGrid>
@@ -687,8 +685,7 @@ title={
               <p className="section-kicker">Forecast</p>
               <h2>3-day outlook</h2>
               <p>
-                A quick read on the next few days so the app feels like a
-                complete weather product, not just a lookup tool.
+                Get a quick overview of upcoming weather conditions for the next three days.
               </p>
             </div>
 
@@ -802,7 +799,7 @@ title={
                 <div className="weather-device-brand">
                   <img src={Logo} alt="BreezeNow" />
                   <div>
-                    <span>Live weather</span>
+                    <span>Live weather </span>
                     <strong>
                       {weatherData ? weatherData.location.name : "Patna"}
                     </strong>
@@ -892,11 +889,10 @@ title={
 
         <section className="section-block">
           <div className="section-heading">
-            <p className="section-kicker">Why it feels premium</p>
+            <p className="section-kicker">Why users love BreezeNow</p>
             <h2>Focused weather cards instead of a cluttered dashboard.</h2>
             <p>
-              BreezeNow keeps the page visually light while still surfacing the
-              details people actually check.
+              Weather information designed to be simple, accurate, and easy to scan.
             </p>
           </div>
 
@@ -919,7 +915,7 @@ title={
             <Card
               badge="Live"
               title="Forecasts with intent"
-              text="A clean three-day outlook gives the page a complete, product-like feel."
+              text="Stay informed with a concise forecast of upcoming weather conditions."
             />
           </FeaturesGrid>
         </section>
@@ -929,8 +925,7 @@ title={
             <p className="section-kicker">Search</p>
             <h2>Check a location in one line.</h2>
             <p>
-              Search is still available, but the presentation is calmer and
-              closer to a polished landing page than a raw utility screen.
+              Get accurate weather updates for your chosen location in just a few seconds.
             </p>
           </div>
 
