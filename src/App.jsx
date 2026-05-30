@@ -345,12 +345,15 @@ function App() {
   const getWeatherInsights = () => {
     const insights = [];
 
+    const unit = isCelsius ? "°C" : "°F";
+const insights = [];
+
     if (weather.temperature >= 35) {
       insights.push({
         title: "Stay hydrated in high temperatures",
-        description: `Temperatures above ${weather.temperature}°C — drink water regularly and avoid prolonged sun exposure.`,
+        description: `Temperatures above ${weather.temperature}${unit} — drink water regularly and avoid prolonged sun exposure.`,
         emoji: "🌡️",
-        accent: "yellow",
+        accent: "Heat Advisory",
       });
     }
 
@@ -359,7 +362,7 @@ function App() {
         title: "High UV exposure today",
         description: `UV index is currently ${weather.uv}. Use sunscreen and avoid excessive sun exposure.`,
         emoji: "🧴",
-        accent: "yellow",
+        accent: "Heat Advisory",
       });
     }
 
@@ -368,7 +371,7 @@ function App() {
         title: "Strong winds expected outside",
         description: `Wind speeds at ${weather.windSpeed} KPH — be cautious while traveling outdoors.`,
         emoji: "💨",
-        accent: "blue",
+        accent: "Wind Advisory",
       });
     }
 
@@ -377,7 +380,7 @@ function App() {
         title: "High humidity levels today",
         description: `Humidity is currently ${weather.humidity}% which may make the weather feel warmer.`,
         emoji: "💧",
-        accent: "cyan",
+        accent: "Humidity Alert",
       });
     }
 
@@ -387,7 +390,7 @@ function App() {
         description:
           "Rainy conditions are expected today. Keep an umbrella or raincoat handy.",
         emoji: "🌧️",
-        accent: "purple",
+        accent: "Rain Alert",
       });
     }
 
@@ -400,7 +403,7 @@ function App() {
         description:
           "Clear skies and pleasant visibility make this ideal for outdoor plans.",
         emoji: "☀️",
-        accent: "green",
+        accent: "Outdoor Friendly",
       });
     }
 
@@ -413,7 +416,7 @@ function App() {
         description:
           "Dense cloud cover may reduce sunlight throughout the day.",
         emoji: "☁️",
-        accent: "gray",
+        accent: "Cloudy Conditions",
       });
     }
 
@@ -427,7 +430,7 @@ function App() {
         description:
           "Mist or fog conditions may affect visibility while driving or traveling.",
         emoji: "🌫️",
-        accent: "cyan",
+        accent: "Visibility Alert",
       });
     }
 
@@ -437,7 +440,7 @@ function App() {
         description:
           "Take precautions and avoid open areas during thunderstorms.",
         emoji: "⛈️",
-        accent: "purple",
+        accent: "Thunderstorm Warning",
       });
     }
 
@@ -447,7 +450,7 @@ function App() {
         description:
           "Cold and snowy conditions may affect travel and outdoor activities.",
         emoji: "❄️",
-        accent: "blue",
+        accent: "Snow Alert",
       });
     }
 
@@ -457,7 +460,7 @@ function App() {
         description:
           "Wear warm clothing and avoid prolonged exposure to cold weather.",
         emoji: "🧥",
-        accent: "cyan",
+        accent: "Cold Weather Alert",
       });
     }
     return insights;
@@ -509,7 +512,7 @@ function App() {
       <div className="weather-workspace">
         <div className="weather-toolbar">
           <div>
-            <p className="section-kicker">Live Weather</p>
+            <p className="section-kicker">Live Weather </p>
             <h2 className="text-3xl font-black tracking-tight m-0 text-current">
               {cityName} weather at a glance
             </h2>
@@ -526,7 +529,7 @@ function App() {
 
         <div className="weather-current-panel weather-panel">
           <div className="weather-current-overview">
-            <p className="weather-status">Current conditions</p>
+            <p className="weather-status">Current Conditions</p>
             <h3>{cityName}</h3>
             <p>
               {region ? `${region}, ${location.country}` : location.country}
