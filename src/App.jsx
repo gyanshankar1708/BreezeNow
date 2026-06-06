@@ -10,12 +10,7 @@ import { Hero } from "./components/Hero";
 import { ThemeToggle } from "./components/ThemeToggle";
 
 import { WeatherCharts } from "./components/WeatherCharts";
-import {
-  formatTemperature,
-  formatWindSpeed,
-  formatPressure,
-  validateWeatherData,
-} from "./utils/weatherUtils";
+import { validateWeatherData } from "./utils/weatherUtils";
 
 function App() {
   const [city, setCity] = useState(() => {
@@ -917,6 +912,35 @@ title={
               badge="Live"
               title="Forecasts with intent"
               text="A clean three-day outlook gives the page a complete, product-like feel."
+            />
+          </FeaturesGrid>
+        </section>
+
+        <section className="section-block compact" id="about">
+          <div className="section-heading align-start">
+            <p className="section-kicker">About BreezeNow</p>
+            <h2>Weather context without the dashboard noise.</h2>
+            <p>
+              BreezeNow turns live conditions, three-day forecasts, saved
+              cities, and practical guidance into one focused weather workspace.
+            </p>
+          </div>
+
+          <FeaturesGrid>
+            <Card
+              badge="Focus"
+              title="Built for quick decisions"
+              text="The page highlights current conditions, forecasts, and daily guidance before secondary details."
+            />
+            <Card
+              badge="Personal"
+              title="Keeps useful places nearby"
+              text="Recent searches and saved cities make repeat checks fast without extra navigation."
+            />
+            <Card
+              badge="Accessible"
+              title="Fits the existing theme"
+              text="The About section uses the same card and section patterns so dark and light modes stay consistent."
             />
           </FeaturesGrid>
         </section>
