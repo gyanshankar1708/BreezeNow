@@ -1092,9 +1092,21 @@ title={
 
         {error ? (
           <div className="weather-alert">{error}</div>
-        ) : (   
+        ) : (
           <WeatherDetail />
         )}
+
+        <section className="section-block compact" id="about">
+          <div className="section-heading align-start">
+            <p className="section-kicker">About BreezeNow</p>
+            <h2>Weather updates designed to stay calm and useful.</h2>
+            <p>
+              BreezeNow turns live WeatherAPI data into a focused weather
+              companion with city search, saved locations, unit switching, and
+              practical daily guidance in one polished interface.
+            </p>
+          </div>
+        </section>
       </div>
 
       <Footer />
