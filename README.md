@@ -91,14 +91,15 @@ Click the link provided in the terminal (usually http://localhost:5173) to view 
 Weather/
 ├─ public/
 │  └─ Favicon.png
-├─ src/
+src/
 │  ├─ assets/
 │  │  └─ Logo.png
 │  ├─ App.css
 │  ├─ App.jsx
 │  ├─ index.css
-│  ├─ main.jsx
-│  └─ secrets.js <-- Here you will keep your API key
+│  └─ main.jsx
+
+.env <-- Store VITE_WEATHER_API_KEY here
 ├─ .gitignore
 ├─ eslint.config.js
 ├─ index.html
