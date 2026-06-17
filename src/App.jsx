@@ -3,12 +3,13 @@ import { useEffect, useState } from "react";
 import "./App.css";
 import Logo from "./assets/Logo.png";
 import { Card } from "./components/Card";
+import { AirQualityPanel } from "./components/AirQualityPanel";
 import { BackToTop } from "./components/BackToTop";
 import { Footer } from "./components/Footer";
 import { FeaturesGrid } from "./components/FeaturesGrid";
 import { Hero } from "./components/Hero";
 import { ThemeToggle } from "./components/ThemeToggle";
-
+import WeatherMap from "./components/WeatherMap";
 import { WeatherCharts } from "./components/WeatherCharts";
 import {
   formatTemperature,
@@ -294,8 +295,7 @@ function App() {
 
   const isCitySaved = (cityName) => {
     return favoriteCities.some(
-      (city) =>
-        city.name.toLowerCase() === cityName.toLowerCase(),
+      (city) => city.name.toLowerCase() === cityName.toLowerCase(),
     );
   };
 
@@ -306,18 +306,14 @@ function App() {
       name: weatherData.location.name,
       region: weatherData.location.region,
       country: weatherData.location.country,
-      temp: isCelsius
-        ? weatherData.current.temp_c
-        : weatherData.current.temp_f,
+      temp: isCelsius ? weatherData.current.temp_c : weatherData.current.temp_f,
       condition: weatherData.current.condition.text,
       icon: weatherData.current.condition.icon,
     };
 
     setFavoriteCities((prev) => {
       const exists = prev.some(
-        (city) =>
-          city.name.toLowerCase() ===
-          cityPayload.name.toLowerCase(),
+        (city) => city.name.toLowerCase() === cityPayload.name.toLowerCase(),
       );
 
       if (exists) return prev;
@@ -328,11 +324,7 @@ function App() {
 
   const removeCity = (cityName) => {
     setFavoriteCities((prev) =>
-      prev.filter(
-        (city) =>
-          city.name.toLowerCase() !==
-          cityName.toLowerCase(),
-      ),
+      prev.filter((city) => city.name.toLowerCase() !== cityName.toLowerCase()),
     );
   };
 
@@ -485,6 +477,7 @@ const insights = [];
       const data = await response.json();
       setWeather(data);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     useEffect(() => {if (city) {getWeather(city);}}, [city]);
     return (
       <div>
@@ -506,6 +499,7 @@ const insights = [];
     const insights = getWeatherInsights();
     const cityName = location.name;
     const region = location.region;
+    const airQuality = current.air_quality;
 
     return (
       <div className="weather-workspace">
@@ -516,8 +510,8 @@ const insights = [];
               {cityName}'s weather at a glance
             </h2>
           </div>
-          <button 
-            onClick={toggleUnit} 
+          <button
+            onClick={toggleUnit}
             className="unit-switch"
             title={`Switch to ${isCelsius ? "Fahrenheit" : "Celsius"}`}
             aria-label={`Switch to ${isCelsius ? "Fahrenheit" : "Celsius"}`}
@@ -570,9 +564,7 @@ const insights = [];
                 isCitySaved(cityName) ? "saved" : ""
               }`}
             >
-              {isCitySaved(cityName)
-                ? "Saved"
-                : "☆ Add city to favorites"}
+              {isCitySaved(cityName) ? "Saved" : "☆ Add city to favorites"}
             </button>
           </div>
         </div>
@@ -653,9 +645,14 @@ title={
             subtle
           />
         </div>
+
+
+        <AirQualityPanel airQuality={airQuality} />
+
         <div>
           <WeatherChart/>
         </div>
+
         {insights.length > 0 && (
           <section className="section-block compact">
             <div className="section-heading align-start">
@@ -679,8 +676,25 @@ Weather-based recommendations for today in {cityName}.              </p>
           </section>
         )}
 
+        <section className="section-block compact" id="map">
+          <WeatherMap
+            weatherData={weatherData}
+            isCelsius={isCelsius}
+            apiKey={import.meta.env.VITE_WEATHER_API_KEY}
+            theme={theme}
+            onSelectLocation={(newCity) => {
+              setCity(newCity);
+              setCityInfo(newCity);
+              window.location.hash = "#top";
+            }}
+          />
+        </section>
+
         {forecastData && forecastData.length > 0 && (
-          <section className="section-block compact weather-metrics-grid" id="forecast">
+          <section
+            className="section-block compact weather-metrics-grid"
+            id="forecast"
+          >
             <div className="section-heading align-start">
               <p className="section-kicker">Forecast</p>
               <h2>3-day outlook</h2>
@@ -746,7 +760,12 @@ Weather-based recommendations for today in {cityName}.              </p>
       <BackToTop />
       <div className="page-shell">
         <header className="topbar">
-          <a className="brand" href="#top" aria-label="BreezeNow home">
+          <a 
+            className="brand" 
+            href="#top" 
+            aria-label="BreezeNow home"
+            onClick={() => setActiveTab("weather")}
+          >
             <img src={Logo} alt="BreezeNow" className="brand-mark" />
             <span>
               BreezeNow
@@ -756,15 +775,30 @@ Weather-based recommendations for today in {cityName}.              </p>
 
           <div className="topbar-actions">
             <button
-              className="ghost-link"
+              className={`ghost-link ${activeTab === "favorites" ? "active" : ""}`}
               onClick={() => setActiveTab("favorites")}
             >
-             ☆ Favorites
+              ☆ Favorites
             </button>
-            <a className="ghost-link" href="#weather">
+            <a 
+              className="ghost-link" 
+              href="#weather"
+              onClick={() => setActiveTab("weather")}
+            >
               Weather
             </a>
-            <a className="ghost-link" href="#forecast">
+            <a 
+              className="ghost-link" 
+              href="#map"
+              onClick={() => setActiveTab("weather")}
+            >
+              Weather Map
+            </a>
+            <a 
+              className="ghost-link" 
+              href="#forecast"
+              onClick={() => setActiveTab("weather")}
+            >
               Forecast
             </a>
             <ThemeToggle theme={theme} onToggle={toggleTheme} />
@@ -933,19 +967,40 @@ Weather-based recommendations for today in {cityName}.              </p>
             <label className="sr-only" htmlFor="weather-city">
               City name
             </label>
-            <input
-              id="weather-city"
-              type="text"
-              placeholder="Enter city name"
-              value={cityInfo}
-              onChange={handleChange}
-              onFocus={() => setShowSuggestions(true)}
-              onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
-              className="weather-search-input"
-              onKeyDown={(e) => {
-                if (e.key === "Enter") handleSearch();
-              }}
-            />
+            <div className="weather-search-wrapper">
+              <input
+                id="weather-city"
+                type="text"
+                placeholder="Enter city name"
+                value={cityInfo}
+                onChange={handleChange}
+                onFocus={() => setShowSuggestions(true)}
+                onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
+                className="weather-search-input"
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") handleSearch();
+                }}
+              />
+              {showSuggestions && suggestions.length > 0 && (
+                <div className="suggestions-dropdown">
+                  {suggestions.map((suggestion) => (
+                    <div
+                      key={suggestion.id || suggestion.url}
+                      className="suggestion-item"
+                      onClick={() => handleSuggestionClick(suggestion)}
+                    >
+                      <span className="suggestion-name">
+                        {suggestion.name}
+                      </span>
+                      <span className="suggestion-region">
+                        {suggestion.region ? `${suggestion.region}, ` : ""}
+                        {suggestion.country}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
             <button onClick={handleSearch} className="primary-button">
               Search
             </button>
@@ -957,26 +1012,6 @@ Weather-based recommendations for today in {cityName}.              </p>
             >
               {loadingLocation ? "Detecting..." : "Use Current Location"}
             </button>
-
-            {showSuggestions && suggestions.length > 0 && (
-              <div className="absolute top-full mt-2 w-full bg-white/95 backdrop-blur-md rounded-xl shadow-2xl overflow-hidden z-50 text-left border border-white/20">
-                {suggestions.map((suggestion) => (
-                  <div
-                    key={suggestion.id || suggestion.url}
-                    className="px-4 py-3 hover:bg-blue-50 cursor-pointer text-gray-800 border-b border-gray-200 last:border-b-0 transition"
-                    onClick={() => handleSuggestionClick(suggestion)}
-                  >
-                    <span className="font-semibold text-blue-900">
-                      {suggestion.name}
-                    </span>
-                    <span className="text-sm text-gray-600 ml-2">
-                      {suggestion.region ? `${suggestion.region}, ` : ""}
-                      {suggestion.country}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            )}
           </div>
 
           {recentSearches.length > 0 && (
@@ -997,100 +1032,90 @@ Weather-based recommendations for today in {cityName}.              </p>
             </div>
           )}
         </section>
-{activeTab === "favorites" && (
-  <div className="favorites-modal-overlay">
-  <div className="favorites-modal">
-    <div className="favorites-header">
-      <div>
-        <p className="section-kicker">Starred cities</p>
-        <h2>Your saved locations</h2>
-      </div>
+        {activeTab === "favorites" && (
+          <div className="favorites-modal-overlay">
+            <div className="favorites-modal">
+              <div className="favorites-header">
+                <div>
+                  <p className="section-kicker">Starred cities</p>
+                  <h2>Your saved locations</h2>
+                </div>
 
-      {favoriteCities.length > 0 && (
-        <span className="favorites-helper">
-          Tap a card to load
-        </span>
-      )}
-      <button
-  className="favorites-close"
-  onClick={() => setActiveTab("weather")}
->
-  ✕
-</button>
-    </div>
-
-    {favoriteCities.length === 0 ? (
-      <div className="favorites-empty">
-        <div className="favorites-empty-icon">
-          ☆
-        </div>
-
-        <h3>No starred cities yet</h3>
-
-        <p>
-          Search for a city and tap "Save city"
-          to add it here for quick access.
-        </p>
-      </div>
-    ) : (
-      <div className="favorites-grid">
-        {favoriteCities.map((cityCard) => (
-          <div
-            key={cityCard.name}
-            className={`favorite-card ${
-              cityCard.name === weatherData?.location?.name
-                ? "active"
-                : ""
-            }`}
-            onClick={() =>
-              loadFavoriteCity(cityCard.name)
-            }
-          >
-            <button
-              className="favorite-remove"
-              onClick={(e) => {
-                e.stopPropagation();
-                removeCity(cityCard.name);
-              }}
-            >
-              × Remove
-            </button>
-
-            <div className="favorite-card-top">
-              <h3>{cityCard.name}</h3>
-
-              <p>
-                {cityCard.region},{" "}
-                {cityCard.country}
-              </p>
-            </div>
-
-            <div className="favorite-weather">
-              <span>{cityCard.condition}</span>
-
-              <strong>
-                {cityCard.temp}
-                {isCelsius ? "°C" : "°F"}
-              </strong>
-            </div>
-
-            {cityCard.name ===
-              weatherData?.location?.name && (
-              <div className="favorite-active">
-                Active
+                {favoriteCities.length > 0 && (
+                  <span className="favorites-helper">Tap a card to load</span>
+                )}
+                <button
+                  className="favorites-close"
+                  onClick={() => setActiveTab("weather")}
+                >
+                  ✕
+                </button>
               </div>
-            )}
+
+              {favoriteCities.length === 0 ? (
+                <div className="favorites-empty">
+                  <div className="favorites-empty-icon">☆</div>
+
+                  <h3>No starred cities yet</h3>
+
+                  <p>
+                    Search for a city and tap "Save city" to add it here for
+                    quick access.
+                  </p>
+                </div>
+              ) : (
+                <div className="favorites-grid">
+                  {favoriteCities.map((cityCard) => (
+                    <div
+                      key={cityCard.name}
+                      className={`favorite-card ${
+                        cityCard.name === weatherData?.location?.name
+                          ? "active"
+                          : ""
+                      }`}
+                      onClick={() => loadFavoriteCity(cityCard.name)}
+                    >
+                      <button
+                        className="favorite-remove"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          removeCity(cityCard.name);
+                        }}
+                      >
+                        × Remove
+                      </button>
+
+                      <div className="favorite-card-top">
+                        <h3>{cityCard.name}</h3>
+
+                        <p>
+                          {cityCard.region}, {cityCard.country}
+                        </p>
+                      </div>
+
+                      <div className="favorite-weather">
+                        <span>{cityCard.condition}</span>
+
+                        <strong>
+                          {cityCard.temp}
+                          {isCelsius ? "°C" : "°F"}
+                        </strong>
+                      </div>
+
+                      {cityCard.name === weatherData?.location?.name && (
+                        <div className="favorite-active">Active</div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
-        ))}
-      </div>
-    )}
-    </div>
-</div>
-)}
+        )}
 
         {error ? (
           <div className="weather-alert">{error}</div>
-        ) : (   
+        ) : (
           <WeatherDetail />
         )}
       </div>
