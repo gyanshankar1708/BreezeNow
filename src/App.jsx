@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import "./App.css";
 import Logo from "./assets/Logo.png";
 import { Card } from "./components/Card";
+import { AirQualityPanel } from "./components/AirQualityPanel";
 import { BackToTop } from "./components/BackToTop";
 import { Footer } from "./components/Footer";
 import { FeaturesGrid } from "./components/FeaturesGrid";
@@ -294,8 +295,7 @@ function App() {
 
   const isCitySaved = (cityName) => {
     return favoriteCities.some(
-      (city) =>
-        city.name.toLowerCase() === cityName.toLowerCase(),
+      (city) => city.name.toLowerCase() === cityName.toLowerCase(),
     );
   };
 
@@ -306,18 +306,14 @@ function App() {
       name: weatherData.location.name,
       region: weatherData.location.region,
       country: weatherData.location.country,
-      temp: isCelsius
-        ? weatherData.current.temp_c
-        : weatherData.current.temp_f,
+      temp: isCelsius ? weatherData.current.temp_c : weatherData.current.temp_f,
       condition: weatherData.current.condition.text,
       icon: weatherData.current.condition.icon,
     };
 
     setFavoriteCities((prev) => {
       const exists = prev.some(
-        (city) =>
-          city.name.toLowerCase() ===
-          cityPayload.name.toLowerCase(),
+        (city) => city.name.toLowerCase() === cityPayload.name.toLowerCase(),
       );
 
       if (exists) return prev;
@@ -328,11 +324,7 @@ function App() {
 
   const removeCity = (cityName) => {
     setFavoriteCities((prev) =>
-      prev.filter(
-        (city) =>
-          city.name.toLowerCase() !==
-          cityName.toLowerCase(),
-      ),
+      prev.filter((city) => city.name.toLowerCase() !== cityName.toLowerCase()),
     );
   };
 
@@ -504,6 +496,7 @@ function App() {
     const insights = getWeatherInsights();
     const cityName = location.name;
     const region = location.region;
+    const airQuality = current.air_quality;
 
     return (
       <div className="weather-workspace">
@@ -514,8 +507,8 @@ function App() {
               {cityName} weather at a glance
             </h2>
           </div>
-          <button 
-            onClick={toggleUnit} 
+          <button
+            onClick={toggleUnit}
             className="unit-switch"
             title={`Switch to ${isCelsius ? "Fahrenheit" : "Celsius"}`}
             aria-label={`Switch to ${isCelsius ? "Fahrenheit" : "Celsius"}`}
@@ -568,9 +561,7 @@ function App() {
                 isCitySaved(cityName) ? "saved" : ""
               }`}
             >
-              {isCitySaved(cityName)
-                ? "Saved"
-                : "☆ Add city to favorites"}
+              {isCitySaved(cityName) ? "Saved" : "☆ Add city to favorites"}
             </button>
           </div>
         </div>
@@ -651,16 +642,22 @@ title={
             subtle
           />
         </div>
+
+
+        <AirQualityPanel airQuality={airQuality} />
+
         <div>
           <WeatherChart/>
         </div>
+
         {insights.length > 0 && (
           <section className="section-block compact">
             <div className="section-heading align-start">
               <p className="section-kicker">Daily guidance</p>
               <h2>What to keep in mind today</h2>
               <p>
-                Short, practical advice based on the live weather conditions in {cityName}.
+                Short, practical advice based on the live weather conditions in{" "}
+                {cityName}.
               </p>
             </div>
 
@@ -679,7 +676,10 @@ title={
         )}
 
         {forecastData && forecastData.length > 0 && (
-          <section className="section-block compact weather-metrics-grid" id="forecast">
+          <section
+            className="section-block compact weather-metrics-grid"
+            id="forecast"
+          >
             <div className="section-heading align-start">
               <p className="section-kicker">Forecast</p>
               <h2>3-day outlook</h2>
@@ -759,7 +759,7 @@ title={
               className="ghost-link"
               onClick={() => setActiveTab("favorites")}
             >
-             ☆ Favorites
+              ☆ Favorites
             </button>
             <a className="ghost-link" href="#weather">
               Weather
@@ -999,100 +999,90 @@ title={
             </div>
           )}
         </section>
-{activeTab === "favorites" && (
-  <div className="favorites-modal-overlay">
-  <div className="favorites-modal">
-    <div className="favorites-header">
-      <div>
-        <p className="section-kicker">Starred cities</p>
-        <h2>Your saved locations</h2>
-      </div>
+        {activeTab === "favorites" && (
+          <div className="favorites-modal-overlay">
+            <div className="favorites-modal">
+              <div className="favorites-header">
+                <div>
+                  <p className="section-kicker">Starred cities</p>
+                  <h2>Your saved locations</h2>
+                </div>
 
-      {favoriteCities.length > 0 && (
-        <span className="favorites-helper">
-          Tap a card to load
-        </span>
-      )}
-      <button
-  className="favorites-close"
-  onClick={() => setActiveTab("weather")}
->
-  ✕
-</button>
-    </div>
-
-    {favoriteCities.length === 0 ? (
-      <div className="favorites-empty">
-        <div className="favorites-empty-icon">
-          ☆
-        </div>
-
-        <h3>No starred cities yet</h3>
-
-        <p>
-          Search for a city and tap "Save city"
-          to add it here for quick access.
-        </p>
-      </div>
-    ) : (
-      <div className="favorites-grid">
-        {favoriteCities.map((cityCard) => (
-          <div
-            key={cityCard.name}
-            className={`favorite-card ${
-              cityCard.name === weatherData?.location?.name
-                ? "active"
-                : ""
-            }`}
-            onClick={() =>
-              loadFavoriteCity(cityCard.name)
-            }
-          >
-            <button
-              className="favorite-remove"
-              onClick={(e) => {
-                e.stopPropagation();
-                removeCity(cityCard.name);
-              }}
-            >
-              × Remove
-            </button>
-
-            <div className="favorite-card-top">
-              <h3>{cityCard.name}</h3>
-
-              <p>
-                {cityCard.region},{" "}
-                {cityCard.country}
-              </p>
-            </div>
-
-            <div className="favorite-weather">
-              <span>{cityCard.condition}</span>
-
-              <strong>
-                {cityCard.temp}
-                {isCelsius ? "°C" : "°F"}
-              </strong>
-            </div>
-
-            {cityCard.name ===
-              weatherData?.location?.name && (
-              <div className="favorite-active">
-                Active
+                {favoriteCities.length > 0 && (
+                  <span className="favorites-helper">Tap a card to load</span>
+                )}
+                <button
+                  className="favorites-close"
+                  onClick={() => setActiveTab("weather")}
+                >
+                  ✕
+                </button>
               </div>
-            )}
+
+              {favoriteCities.length === 0 ? (
+                <div className="favorites-empty">
+                  <div className="favorites-empty-icon">☆</div>
+
+                  <h3>No starred cities yet</h3>
+
+                  <p>
+                    Search for a city and tap "Save city" to add it here for
+                    quick access.
+                  </p>
+                </div>
+              ) : (
+                <div className="favorites-grid">
+                  {favoriteCities.map((cityCard) => (
+                    <div
+                      key={cityCard.name}
+                      className={`favorite-card ${
+                        cityCard.name === weatherData?.location?.name
+                          ? "active"
+                          : ""
+                      }`}
+                      onClick={() => loadFavoriteCity(cityCard.name)}
+                    >
+                      <button
+                        className="favorite-remove"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          removeCity(cityCard.name);
+                        }}
+                      >
+                        × Remove
+                      </button>
+
+                      <div className="favorite-card-top">
+                        <h3>{cityCard.name}</h3>
+
+                        <p>
+                          {cityCard.region}, {cityCard.country}
+                        </p>
+                      </div>
+
+                      <div className="favorite-weather">
+                        <span>{cityCard.condition}</span>
+
+                        <strong>
+                          {cityCard.temp}
+                          {isCelsius ? "°C" : "°F"}
+                        </strong>
+                      </div>
+
+                      {cityCard.name === weatherData?.location?.name && (
+                        <div className="favorite-active">Active</div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
-        ))}
-      </div>
-    )}
-    </div>
-</div>
-)}
+        )}
 
         {error ? (
           <div className="weather-alert">{error}</div>
-        ) : (   
+        ) : (
           <WeatherDetail />
         )}
       </div>
