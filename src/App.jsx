@@ -970,19 +970,40 @@ title={
             <label className="sr-only" htmlFor="weather-city">
               City name
             </label>
-            <input
-              id="weather-city"
-              type="text"
-              placeholder="Enter city name"
-              value={cityInfo}
-              onChange={handleChange}
-              onFocus={() => setShowSuggestions(true)}
-              onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
-              className="weather-search-input"
-              onKeyDown={(e) => {
-                if (e.key === "Enter") handleSearch();
-              }}
-            />
+            <div className="weather-search-wrapper">
+              <input
+                id="weather-city"
+                type="text"
+                placeholder="Enter city name"
+                value={cityInfo}
+                onChange={handleChange}
+                onFocus={() => setShowSuggestions(true)}
+                onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
+                className="weather-search-input"
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") handleSearch();
+                }}
+              />
+              {showSuggestions && suggestions.length > 0 && (
+                <div className="suggestions-dropdown">
+                  {suggestions.map((suggestion) => (
+                    <div
+                      key={suggestion.id || suggestion.url}
+                      className="suggestion-item"
+                      onClick={() => handleSuggestionClick(suggestion)}
+                    >
+                      <span className="suggestion-name">
+                        {suggestion.name}
+                      </span>
+                      <span className="suggestion-region">
+                        {suggestion.region ? `${suggestion.region}, ` : ""}
+                        {suggestion.country}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
             <button onClick={handleSearch} className="primary-button">
               Search
             </button>
@@ -994,26 +1015,6 @@ title={
             >
               {loadingLocation ? "Detecting..." : "Use Current Location"}
             </button>
-
-            {showSuggestions && suggestions.length > 0 && (
-              <div className="absolute top-full mt-2 w-full bg-white/95 backdrop-blur-md rounded-xl shadow-2xl overflow-hidden z-50 text-left border border-white/20">
-                {suggestions.map((suggestion) => (
-                  <div
-                    key={suggestion.id || suggestion.url}
-                    className="px-4 py-3 hover:bg-blue-50 cursor-pointer text-gray-800 border-b border-gray-200 last:border-b-0 transition"
-                    onClick={() => handleSuggestionClick(suggestion)}
-                  >
-                    <span className="font-semibold text-blue-900">
-                      {suggestion.name}
-                    </span>
-                    <span className="text-sm text-gray-600 ml-2">
-                      {suggestion.region ? `${suggestion.region}, ` : ""}
-                      {suggestion.country}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            )}
           </div>
 
           {recentSearches.length > 0 && (
