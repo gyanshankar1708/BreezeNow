@@ -1,3 +1,21 @@
+ feat/footer-navigation
+export default function Footer() {
+  return (
+    <footer className="footer">
+      <div className="footer-content">
+        <div className="footer-brand">
+          <h3>BreezeNow</h3>
+          <p>Weather, reimagined.</p>
+        </div>
+
+        <nav className="footer-links">
+          <a href="#weather">Weather</a>
+          <a href="#forecast">Forecast</a>
+          <a href="#favorites">Favorites</a>
+        </nav>
+
+        <p className="footer-copy">
+
 const GitHubMark = ({ className, ...props }) => (
   <svg
     viewBox="0 0 24 24"
@@ -151,6 +169,7 @@ export function Footer() {
         <p className="text-center text-xs leading-6 text-[var(--muted)] sm:text-sm">
           © 2026 BreezeNow. Created by GyanShankar Singh. Powered by Weather
           API.
+
         </p>
       </div>
     </footer>

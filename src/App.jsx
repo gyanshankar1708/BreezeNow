@@ -1,4 +1,8 @@
+ feat/footer-navigation
+import Footer from "./components/Footer";
+
 import Skeleton from "./components/Skeleton";
+
 import { useEffect, useState } from "react";
 import "./App.css";
 import Logo from "./assets/Logo.png";
@@ -757,6 +761,7 @@ Weather-based recommendations for today in {cityName}.              </p>
 
   return (
     <div className="app-shell">
+    <Footer />
       <BackToTop />
       <div className="page-shell">
         <header className="topbar">
