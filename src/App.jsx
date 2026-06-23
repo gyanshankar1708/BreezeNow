@@ -335,14 +335,16 @@ function App() {
   };
 
   const getWeatherInsights = () => {
-    const insights = [];
+
+    const unit = isCelsius ? "°C" : "°F";
+const insights = [];
 
     if (weather.temperature >= 35) {
       insights.push({
         title: "Stay hydrated in high temperatures",
-        description: `Temperatures above ${weather.temperature}°C — drink water regularly and avoid prolonged sun exposure.`,
+        description: `Temperatures above ${weather.temperature}${unit} — drink water regularly and avoid prolonged sun exposure.`,
         emoji: "🌡️",
-        accent: "yellow",
+        accent: "Heat Advisory",
       });
     }
 
@@ -351,7 +353,7 @@ function App() {
         title: "High UV exposure today",
         description: `UV index is currently ${weather.uv}. Use sunscreen and avoid excessive sun exposure.`,
         emoji: "🧴",
-        accent: "yellow",
+        accent: "Heat Advisory",
       });
     }
 
@@ -360,7 +362,7 @@ function App() {
         title: "Strong winds expected outside",
         description: `Wind speeds at ${weather.windSpeed} KPH — be cautious while traveling outdoors.`,
         emoji: "💨",
-        accent: "blue",
+        accent: "Wind Advisory",
       });
     }
 
@@ -369,7 +371,7 @@ function App() {
         title: "High humidity levels today",
         description: `Humidity is currently ${weather.humidity}% which may make the weather feel warmer.`,
         emoji: "💧",
-        accent: "cyan",
+        accent: "Humidity Alert",
       });
     }
 
@@ -379,7 +381,7 @@ function App() {
         description:
           "Rainy conditions are expected today. Keep an umbrella or raincoat handy.",
         emoji: "🌧️",
-        accent: "purple",
+        accent: "Rain Alert",
       });
     }
 
@@ -392,7 +394,7 @@ function App() {
         description:
           "Clear skies and pleasant visibility make this ideal for outdoor plans.",
         emoji: "☀️",
-        accent: "green",
+        accent: "Outdoor Friendly",
       });
     }
 
@@ -405,7 +407,7 @@ function App() {
         description:
           "Dense cloud cover may reduce sunlight throughout the day.",
         emoji: "☁️",
-        accent: "gray",
+        accent: "Cloudy Conditions",
       });
     }
 
@@ -419,7 +421,7 @@ function App() {
         description:
           "Mist or fog conditions may affect visibility while driving or traveling.",
         emoji: "🌫️",
-        accent: "cyan",
+        accent: "Visibility Alert",
       });
     }
 
@@ -429,7 +431,7 @@ function App() {
         description:
           "Take precautions and avoid open areas during thunderstorms.",
         emoji: "⛈️",
-        accent: "purple",
+        accent: "Thunderstorm Warning",
       });
     }
 
@@ -439,7 +441,7 @@ function App() {
         description:
           "Cold and snowy conditions may affect travel and outdoor activities.",
         emoji: "❄️",
-        accent: "blue",
+        accent: "Snow Alert",
       });
     }
 
@@ -449,7 +451,7 @@ function App() {
         description:
           "Wear warm clothing and avoid prolonged exposure to cold weather.",
         emoji: "🧥",
-        accent: "cyan",
+        accent: "Cold Weather Alert",
       });
     }
     return insights;
@@ -503,9 +505,9 @@ function App() {
       <div className="weather-workspace">
         <div className="weather-toolbar">
           <div>
-            <p className="section-kicker">Live Weather</p>
+            <p className="section-kicker">Live Weather </p>
             <h2 className="text-3xl font-black tracking-tight m-0 text-current">
-              {cityName} weather at a glance
+              {cityName}'s weather at a glance
             </h2>
           </div>
           <button
@@ -520,7 +522,7 @@ function App() {
 
         <div className="weather-current-panel weather-panel">
           <div className="weather-current-overview">
-            <p className="weather-status">Current conditions</p>
+            <p className="weather-status">Current Conditions</p>
             <h3>{cityName}</h3>
             <p>
               {region ? `${region}, ${location.country}` : location.country}
@@ -657,9 +659,7 @@ title={
               <p className="section-kicker">Daily guidance</p>
               <h2>What to keep in mind today</h2>
               <p>
-                Short, practical advice based on the live weather conditions in{" "}
-                {cityName}.
-              </p>
+Weather-based recommendations for today in {cityName}.              </p>
             </div>
 
             <FeaturesGrid>
@@ -699,8 +699,7 @@ title={
               <p className="section-kicker">Forecast</p>
               <h2>3-day outlook</h2>
               <p>
-                A quick read on the next few days so the app feels like a
-                complete weather product, not just a lookup tool.
+                Get a quick overview of upcoming weather conditions for the next three days.
               </p>
             </div>
 
@@ -834,7 +833,7 @@ title={
                 <div className="weather-device-brand">
                   <img src={Logo} alt="BreezeNow" />
                   <div>
-                    <span>Live weather</span>
+                    <span>Live weather </span>
                     <strong>
                       {weatherData ? weatherData.location.name : "Patna"}
                     </strong>
@@ -924,11 +923,10 @@ title={
 
         <section className="section-block">
           <div className="section-heading">
-            <p className="section-kicker">Why it feels premium</p>
+            <p className="section-kicker">Why users love BreezeNow</p>
             <h2>Focused weather cards instead of a cluttered dashboard.</h2>
             <p>
-              BreezeNow keeps the page visually light while still surfacing the
-              details people actually check.
+              Weather information designed to be simple, accurate, and easy to scan.
             </p>
           </div>
 
@@ -951,7 +949,7 @@ title={
             <Card
               badge="Live"
               title="Forecasts with intent"
-              text="A clean three-day outlook gives the page a complete, product-like feel."
+              text="Stay informed with a concise forecast of upcoming weather conditions."
             />
           </FeaturesGrid>
         </section>
@@ -961,8 +959,7 @@ title={
             <p className="section-kicker">Search</p>
             <h2>Check a location in one line.</h2>
             <p>
-              Search is still available, but the presentation is calmer and
-              closer to a polished landing page than a raw utility screen.
+              Get accurate weather updates for your chosen location in just a few seconds.
             </p>
           </div>
 
