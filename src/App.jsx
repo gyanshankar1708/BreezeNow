@@ -1120,6 +1120,17 @@ Weather-based recommendations for today in {cityName}.              </p>
         )}
       </div>
 
+      <section className="section-block compact" id="about">
+        <div className="section-heading align-start">
+          <p className="section-kicker">About BreezeNow</p>
+          <h2>Simple weather context for daily planning.</h2>
+          <p>
+            BreezeNow helps people quickly check current conditions, forecasts,
+            and saved locations from one focused page.
+          </p>
+        </div>
+      </section>
+
       <Footer />
     </div>
   );
