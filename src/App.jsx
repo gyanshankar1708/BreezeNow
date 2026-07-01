@@ -73,6 +73,8 @@ function App() {
     uv: null,
   });
 
+  const [isListening, setIsListening] = useState(false);
+
   useEffect(() => {
     localStorage.setItem("recentSearches", JSON.stringify(recentSearches));
   }, [recentSearches]);
@@ -242,6 +244,49 @@ function App() {
     setCityInfo(query);
     setShowSuggestions(false);
     setCity(query);
+  };
+
+  const startVoiceSearch = () => {
+    if (
+      !("SpeechRecognition" in window) &&
+      !("webkitSpeechRecognition" in window)
+    ) {
+      alert("Speech recognition is not supported in this browser.");
+      return;
+    }
+
+    const SpeechRecognition =
+      window.SpeechRecognition || window.webkitSpeechRecognition;
+
+    const recognition = new SpeechRecognition();
+
+    recognition.lang = "en-US";
+    recognition.interimResults = false;
+    recognition.maxAlternatives = 1;
+
+    setIsListening(true);
+
+    recognition.start();
+
+    recognition.onresult = (event) => {
+      const spokenCity = event.results[0][0].transcript;
+
+      setCityInfo(spokenCity);
+      setCity(spokenCity);
+      setShowSuggestions(false);
+      setError(null);
+
+      recognition.stop();
+    };
+
+    recognition.onerror = () => {
+      setIsListening(false);
+      alert("Voice recognition failed.");
+    };
+
+    recognition.onend = () => {
+      setIsListening(false);
+    };
   };
 
   const handleSuggestionClick = (suggestion) => {
@@ -981,6 +1026,14 @@ Weather-based recommendations for today in {cityName}.              </p>
                   if (e.key === "Enter") handleSearch();
                 }}
               />
+              <button
+                type="button"
+                onClick={startVoiceSearch}
+                className={`voice-button ${isListening ? "listening" : ""}`}
+                title="Search using voice"
+              >
+                {isListening ? "🎙️" : "🎤"}
+              </button>
               {showSuggestions && suggestions.length > 0 && (
                 <div className="suggestions-dropdown">
                   {suggestions.map((suggestion) => (
