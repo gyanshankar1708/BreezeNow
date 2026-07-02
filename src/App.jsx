@@ -12,9 +12,6 @@ import { ThemeToggle } from "./components/ThemeToggle";
 import WeatherMap from "./components/WeatherMap";
 import { WeatherCharts } from "./components/WeatherCharts";
 import {
-  formatTemperature,
-  formatWindSpeed,
-  formatPressure,
   validateWeatherData,
 } from "./utils/weatherUtils";
 
@@ -41,6 +38,7 @@ function App() {
     const saved = localStorage.getItem("favoriteCities");
     return saved ? JSON.parse(saved) : [];
   });
+  const [shareCopied, setShareCopied] = useState(false);
 
   const [activeTab, setActiveTab] = useState("weather");
   const [backgroundClass, setBackgroundClass] = useState(
@@ -334,6 +332,27 @@ function App() {
     setActiveTab("weather");
   };
 
+  const handleShareWeather = () => {
+    if (!weatherData) return;
+    const unit = isCelsius ? "°C" : "°F";
+    const tempVal = isCelsius ? weatherData.current.temp_c : weatherData.current.temp_f;
+    const feelsLikeVal = isCelsius ? weatherData.current.feelslike_c : weatherData.current.feelslike_f;
+    const reportText = `🌤️ Weather Report for ${weatherData.location.name}, ${weatherData.location.region}, ${weatherData.location.country}:
+• Temperature: ${tempVal}${unit} (Feels like: ${feelsLikeVal}${unit})
+• Condition: ${weatherData.current.condition.text}
+• Humidity: ${weatherData.current.humidity}%
+• Wind: ${weather.windSpeed} KPH
+• UV Index: ${weatherData.current.uv}
+Check out BreezeNow for clean weather forecasts!`;
+
+    navigator.clipboard.writeText(reportText).then(() => {
+      setShareCopied(true);
+      setTimeout(() => setShareCopied(false), 2000);
+    }).catch(err => {
+      console.error("Failed to copy text: ", err);
+    });
+  };
+
   const getWeatherInsights = () => {
 
     const unit = isCelsius ? "°C" : "°F";
@@ -565,6 +584,13 @@ const insights = [];
               }`}
             >
               {isCitySaved(cityName) ? "Saved" : "☆ Add city to favorites"}
+            </button>
+
+            <button
+              onClick={handleShareWeather}
+              className="share-weather-button"
+            >
+              {shareCopied ? "✓ Copied summary!" : "📋 Copy weather summary"}
             </button>
           </div>
         </div>
