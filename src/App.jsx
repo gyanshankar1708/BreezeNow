@@ -116,6 +116,8 @@ function App() {
         : current.condition.icon,
       feelsLike: useCelsius ? current.feelslike_c : current.feelslike_f,
       uv: current.uv,
+      sunrise: data.forecast?.forecastday?.[0]?.astro?.sunrise || "N/A",
+      sunset: data.forecast?.forecastday?.[0]?.astro?.sunset || "N/A",
     };
   };
 
@@ -634,14 +636,38 @@ title={
           />
           <Card
             badge="UV index"
-title={
-  !weatherData ? (
-    <Skeleton className="h-8 w-24" />
-  ) : (
-    `${weather.uv}`
-  )
-}
+            title={
+              !weatherData ? (
+                <Skeleton className="h-8 w-24" />
+              ) : (
+                `${weather.uv}`
+              )
+            }
             text="UV exposure guidance for the day."
+            subtle
+          />
+          <Card
+            badge="Sunrise"
+            title={
+              !weatherData ? (
+                <Skeleton className="h-8 w-24" />
+              ) : (
+                weather.sunrise
+              )
+            }
+            text="Local sunrise time today."
+            subtle
+          />
+          <Card
+            badge="Sunset"
+            title={
+              !weatherData ? (
+                <Skeleton className="h-8 w-24" />
+              ) : (
+                weather.sunset
+              )
+            }
+            text="Local sunset time today."
             subtle
           />
         </div>
