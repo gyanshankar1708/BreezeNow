@@ -12,9 +12,6 @@ import { ThemeToggle } from "./components/ThemeToggle";
 import WeatherMap from "./components/WeatherMap";
 import { WeatherCharts } from "./components/WeatherCharts";
 import {
-  formatTemperature,
-  formatWindSpeed,
-  formatPressure,
   validateWeatherData,
 } from "./utils/weatherUtils";
 
@@ -32,6 +29,7 @@ function App() {
   // New States
   const [isCelsius, setIsCelsius] = useState(true);
   const [suggestions, setSuggestions] = useState([]);
+  const [activeSuggestionIndex, setActiveSuggestionIndex] = useState(-1);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [recentSearches, setRecentSearches] = useState(() => {
     const saved = localStorage.getItem("recentSearches");
@@ -145,6 +143,10 @@ function App() {
 
     return () => clearTimeout(timer);
   }, [cityInfo]);
+
+  useEffect(() => {
+    setActiveSuggestionIndex(-1);
+  }, [suggestions]);
 
   useEffect(() => {
     const apiKey = import.meta.env.VITE_WEATHER_API_KEY;
@@ -978,16 +980,37 @@ Weather-based recommendations for today in {cityName}.              </p>
                 onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
                 className="weather-search-input"
                 onKeyDown={(e) => {
-                  if (e.key === "Enter") handleSearch();
+                  if (e.key === "Enter") {
+                    if (activeSuggestionIndex >= 0 && activeSuggestionIndex < suggestions.length) {
+                      handleSuggestionClick(suggestions[activeSuggestionIndex]);
+                    } else {
+                      handleSearch();
+                    }
+                  } else if (e.key === "ArrowDown") {
+                    e.preventDefault();
+                    setActiveSuggestionIndex((prev) =>
+                      prev < suggestions.length - 1 ? prev + 1 : 0,
+                    );
+                  } else if (e.key === "ArrowUp") {
+                    e.preventDefault();
+                    setActiveSuggestionIndex((prev) =>
+                      prev > 0 ? prev - 1 : suggestions.length - 1,
+                    );
+                  } else if (e.key === "Escape") {
+                    setShowSuggestions(false);
+                  }
                 }}
               />
               {showSuggestions && suggestions.length > 0 && (
                 <div className="suggestions-dropdown">
-                  {suggestions.map((suggestion) => (
+                  {suggestions.map((suggestion, index) => (
                     <div
                       key={suggestion.id || suggestion.url}
-                      className="suggestion-item"
+                      className={`suggestion-item ${
+                        index === activeSuggestionIndex ? "active" : ""
+                      }`}
                       onClick={() => handleSuggestionClick(suggestion)}
+                      onMouseEnter={() => setActiveSuggestionIndex(index)}
                     >
                       <span className="suggestion-name">
                         {suggestion.name}
