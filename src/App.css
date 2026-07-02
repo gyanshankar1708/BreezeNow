@@ -1613,6 +1613,24 @@
   border-color: transparent;
 }
 
+.share-weather-button {
+  min-height: 46px;
+  padding: 0 18px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 180ms ease;
+}
+
+.share-weather-button:hover {
+  transform: translateY(-1px);
+  background: var(--surface-strong);
+  border-color: var(--muted);
+}
+
 .favorites-modal-overlay {
   position: fixed;
   inset: 0;
