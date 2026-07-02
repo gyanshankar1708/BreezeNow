@@ -1041,15 +1041,14 @@
 .recent-chip {
   display: inline-flex;
   align-items: center;
-  justify-content: center;
+  gap: 6px;
   min-height: 36px;
-  padding: 0 14px;
+  padding: 0 8px 0 14px;
   border-radius: 999px;
   border: 1px solid var(--border);
   background: var(--surface-strong);
   color: var(--text);
   font-weight: 700;
-  cursor: pointer;
   transition:
     transform 180ms ease,
     border-color 180ms ease,
@@ -1057,10 +1056,42 @@
 }
 
 .recent-chip:hover,
-.recent-chip:focus-visible {
+.recent-chip:focus-within {
   transform: translateY(-1px);
   border-color: rgba(242, 138, 43, 0.36);
+}
+
+.recent-chip-btn {
+  background: none;
+  border: none;
+  color: inherit;
+  font: inherit;
+  font-weight: inherit;
+  padding: 0;
+  cursor: pointer;
   outline: none;
+}
+
+.recent-chip-remove {
+  background: none;
+  border: none;
+  color: var(--muted);
+  font-size: 1.1rem;
+  font-weight: 400;
+  cursor: pointer;
+  width: 20px;
+  height: 20px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: background-color 180ms ease, color 180ms ease;
+  outline: none;
+}
+
+.recent-chip-remove:hover {
+  background-color: var(--border);
+  color: var(--text);
 }
 
 .recent-chip-muted {
