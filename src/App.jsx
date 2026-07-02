@@ -12,9 +12,6 @@ import { ThemeToggle } from "./components/ThemeToggle";
 import WeatherMap from "./components/WeatherMap";
 import { WeatherCharts } from "./components/WeatherCharts";
 import {
-  formatTemperature,
-  formatWindSpeed,
-  formatPressure,
   validateWeatherData,
 } from "./utils/weatherUtils";
 
@@ -307,6 +304,8 @@ function App() {
       region: weatherData.location.region,
       country: weatherData.location.country,
       temp: isCelsius ? weatherData.current.temp_c : weatherData.current.temp_f,
+      temp_c: weatherData.current.temp_c,
+      temp_f: weatherData.current.temp_f,
       condition: weatherData.current.condition.text,
       icon: weatherData.current.condition.icon,
     };
@@ -1097,7 +1096,9 @@ Weather-based recommendations for today in {cityName}.              </p>
                         <span>{cityCard.condition}</span>
 
                         <strong>
-                          {cityCard.temp}
+                          {cityCard.temp_c !== undefined
+                            ? (isCelsius ? cityCard.temp_c : cityCard.temp_f)
+                            : cityCard.temp}
                           {isCelsius ? "°C" : "°F"}
                         </strong>
                       </div>
