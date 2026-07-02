@@ -1874,7 +1874,8 @@
   border-bottom: none;
 }
 
-.suggestion-item:hover {
+.suggestion-item:hover,
+.suggestion-item.active {
   background: rgba(242, 138, 43, 0.1);
 }
 
