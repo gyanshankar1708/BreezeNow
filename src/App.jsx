@@ -328,6 +328,12 @@ function App() {
     );
   };
 
+  const removeRecentSearch = (searchToRemove) => {
+    setRecentSearches((prev) =>
+      prev.filter((search) => search.toLowerCase() !== searchToRemove.toLowerCase())
+    );
+  };
+
   const loadFavoriteCity = (cityName) => {
     setCity(cityName);
     setCityInfo(cityName);
@@ -1018,16 +1024,28 @@ Weather-based recommendations for today in {cityName}.              </p>
             <div className="recent-searches">
               <span>Recent</span>
               {recentSearches.map((search, idx) => (
-                <button
-                  key={idx}
-                  onClick={() => {
-                    setCity(search);
-                    setCityInfo(search);
-                  }}
-                  className="recent-chip"
-                >
-                  {search}
-                </button>
+                <div key={idx} className="recent-chip">
+                  <button
+                    onClick={() => {
+                      setCity(search);
+                      setCityInfo(search);
+                    }}
+                    className="recent-chip-btn"
+                  >
+                    {search}
+                  </button>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      removeRecentSearch(search);
+                    }}
+                    className="recent-chip-remove"
+                    title={`Remove ${search}`}
+                    aria-label={`Remove ${search}`}
+                  >
+                    ×
+                  </button>
+                </div>
               ))}
             </div>
           )}
